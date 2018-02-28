@@ -1,0 +1,33 @@
+{%extends 'template.html'%}
+{%block head%}{{super()}}
+	<title>注册新账号</title>
+	<style type="text/css">
+		form{margin: 0 15px;margin-bottom: 30px;}
+		form .input-1 {border: 1px solid #cbcbcb;padding: 5px;width: 100%;margin-left: -5px;}
+		form textarea {width: 100%;max-width: 100%;display: block;padding: 5px;border-radius: 2px;margin-left: -5px;border: 1px solid #cbcbcb;}
+		form textarea:focus {border-color: #bbb;box-shadow: 0 0 3px #cecece;}
+		.btn-1 {border: 1px solid #cbcbcb;border-radius: 1px;background: #fff;padding: 3px 15px;box-shadow: 0 0 2px #efefef inset;float: right;margin: 12px -6px 0 0;} 
+		.btn-1:focus {border-color: #bbb;box-shadow: 0 0 6px #cecece inset;}
+		form .tip {color:red;text-shadow:0 0 1px #ccc;line-height:32px;margin-left:-10px;}
+		form .light {display: block;margin: 10px 0 4px -5px;font-weight: bold;}
+		form .title {margin-left: -10px;margin-bottom: 22px;height: 60px;font-size: 20px;text-shadow: 0 0 1px #f3f3f3;padding-top: 20px;display: inline-block;border-bottom: 2px solid #008151;height: 32px;}
+		.links {padding: 10px 0;line-height: 28px;}
+		.links a {display: block;border: 1px solid #cbcbcb;box-shadow: 0 0 2px #efefef inset;margin:5px 10px;height: 26px;line-height: 26px;text-align: center;color: #343434;}
+	</style>
+{%endblock%}{%block body%}
+	<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;注册新账号</div>
+	<form method="post">
+		<p class="tip">{{message}}</p>
+		<span class="light">用户名:</span>
+		<input class="input-1" type="text" name="username" required="required" placeholder="常用网名" />
+		<span class="light">Email:</span>
+		<input class="input-1" type="email" name="email" required="required" placeholder="name@example.com" />
+		<span class="light">密码:</span>
+		<input class="input-1" type="password" name="password" required="required" placeholder="不少于6位" />
+		<span style="margin-left: -5px;text-decoration: underline;font-size: 16px;display: inline-block;margin-top: 15px;"> 同意并接受《服务条款》</span><input class="btn-1" type="submit" value="立即注册" />
+	</form>
+	<div class="line"></div>
+	<div class="links">
+		<a href="login">已有账号，去登录</a>
+	</div>
+{%endblock%}

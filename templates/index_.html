@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=2.0" />
+	<link rel="shortcut icon" href="https://uoope.com/r/uoope_tech/wit_favicon.ico" />
+	<link rel="bookmark" href="https://uoope.com/r/uoope_tech/wit_favicon.ico" />
+	<title>WITALK - 智慧·讨论</title>
+	<style type="text/css">
+		* {padding: 0;margin: 0;list-style: none;}
+		body {font-size: 14px;max-width: 520px;margin: 0 auto;font-family: "Raleway","Microsoft Jhenghei","Microsoft Yahei","Helvetica Neue",HelveticaNeue,Arial,sans-serif;}
+		a {text-decoration: none;color: #666;}
+		.nav {padding: 8px 4px;border-bottom: 1px solid #e7e7e7;line-height: 26px;}
+		.nav a {display: inline-block;padding: 0px 4px;color: #444;border-radius: 2px;margin: 2px;}
+		.nav a:hover {background: #feeeee;}
+		.nav .nd-focus {background: #565656;color: #fcfcfc;}
+		.nav .nd-focus:hover {background: #565656;color: #fcfcfc;}
+		.list {}
+		.list li {border-bottom: 1px solid #eee;padding: 8px 10px;}
+		.list li:last-child {border-bottom: none;}
+		.list li .avatar {float: left;padding: 2px;width: 22px;height: 22px;margin-top: -2px;}
+		.list li .avatar img {border-radius: 2px;}
+		.list li .topic {margin-left: 32px;color: #444;}
+		.list li .topic:hover {text-decoration: underline;color: #000;}
+		.list li .topic-info {margin: 0 0 10px 32px;color: #888;font-size: 12px;}
+		.list li .forum {display: inline-block;padding: 2px 6px;background: #feeeee;border-radius: 3px;}
+		.list li .forum:hover {background: #ceeeee;color: #222;}
+		.footer {padding: 12px;}
+	</style>
+</head>
+<body>
+	{% include 'header.html'%}
+	<div class="nav">
+		<a {{all_focus|safe}} href="/">全部</a>
+		<a {{lang_focus|safe}} href="/lang">编程语言</a>
+		<a {{archer_focus|safe}} href="/archer">架构师</a>
+		<a href="/f/1">问答</a>
+		<a {{trade_focus|safe}} href="/trade">交易</a>
+		<a href="/forums">论坛</a>
+	</div>
+	<div id="list" class="list"></div>
+	<div class="list"><li><a id="get-more" style="text-align: right;" href="javascript:;">数据加载中...</a></li></div>
+	{% include 'footer.html' %}
+</body>
+<script type="text/javascript">
+	function ajax(url, fn){
+		var req = new XMLHttpRequest();
+		req.open('GET', url, true);
+		req.onreadystatechange = function(){
+			if (req.readyState == 4 && req.status == 200 ) { // readyState == 4说明请求已完成
+              		fn.call(this, req.responseText);  //从服务器获得数据
+       		};
+		};
+		req.send();
+	}
+	var list = document.getElementById('list');
+	var get_more = document.getElementById('get-more');
+	var pageid = 1;
+	ajax('/topics/0/' + (pageid++), function(txt){
+		if(txt == 'None'){
+			get_more.innerHTML = '暂无数据';
+			get_more.onclick = null;
+			return;
+		}
+		topics = JSON.parse(txt);
+		count = 0;
+		for(posi in topics){
+			topic = topics[posi];
+			list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="22" /></a><div class="topic-info"><a class="forum" href="/f/'+ topic.forum.id +'">'+ topic.forum.name +'</a> · <span style="font-weight: bold;">'+ topic.author.name +'</span> · '+ topic.post_date +'前 · '+ topic.answer_count +'回复</div><a class="topic" href="/t/' + topic.id + '">' + topic.title + '</a></li>\n';
+			count++;
+		}
+		if(count < 12) get_more.style.display = 'none';
+		else get_more.innerHTML = '还有，继续浏览';
+	});
+	get_more.onclick = function(){
+		get_more.innerHTML = '加载中...';
+		ajax('/topics/0/' + (pageid++), function(txt){
+			if(txt == 'None'){
+				get_more.innerHTML = '没有了';
+				get_more.onclick = null;
+				return;
+			}
+			topics = JSON.parse(txt);
+			count = 0
+			for(posi in topics){
+				topic = topics[posi];
+				list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="22" /></a><div class="topic-info"><a class="forum" href="/f/'+ topic.forum.id +'">'+ topic.forum.name +'</a> · <span style="font-weight: bold;">'+ topic.author.name +'</span> · '+ topic.post_date +'前 · '+ topic.answer_count +'回复</div><a class="topic" href="/t/' + topic.id + '">' + topic.title + '</a></li>\n';
+				count++;
+			}
+			if(count < 12) get_more.innerHTML = '没有了';
+			else get_more.innerHTML = '还有，继续浏览';
+		});
+	}
+</script>
+</html>

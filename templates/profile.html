@@ -1,0 +1,56 @@
+{% extends 'template.html' %}
+{% block head %}
+{{super()}}
+	<title>{{user.name}}的资料</title>
+	<style type="text/css">
+		.userinfo {padding: 0px 10px 20px 10px;position: relative;}
+		.userinfo .avatar{display: block;border-radius: 8px;margin: 0 auto;border: 6px solid #efefef;width: 68;height: 68px;float: left;}
+		.userinfo .online,.userinfo .offline {display: inline-block;width: 10px;height: 10px;border-radius: 6px;background: green;position: absolute;top:72px;left: 78px;}
+		.userinfo .offline {background: #cfcfcf;}
+		.userinfo .send_msg {float: right;display: inline-block;width: 52px;height: 22px;line-height: 22px;border-radius: 3px;color: #fff;background: #2dad0e;text-align: center;font-size: 12px;}
+		.userinfo .send_msg:hover {background: #6d9125;}
+		.userinfo .gender {position: absolute;top:1px;left: 72px;}
+		.userinfo .textinfo {margin: 2px 0 0 92px;height: 96px;}
+		.userinfo .textinfo span {display: inline-block;margin:0 6px;height: 21px;line-height:30px;}
+		.userinfo .textinfo p {color: #888;font-size: 14px;margin: 8px 0 0 0;}
+		.userinfo .signature {margin-top: 2px;color: #bcbcbc;border-bottom: 1px solid #efefef;padding: 6px 0;clear: both;}
+		.userinfo .signature img {float: left;margin: -7px 4px 0 0;}
+		.oth-info {padding: 2px 5px 20px 5px;}
+		.oth-info a {display: inline-block;padding: 6px 12px 6px 6px;border-radius: 21px;margin: 6px;height: 22px;line-height: 22px;color: #888;background: #efefef;}
+		.oth-info a img {float: left;margin-right: 5px;margin-top: 0px;}
+		.oth-info a:hover {box-shadow: 0 0 16px #bcbcbc inset;}	
+	</style>
+{% endblock %}
+{% block body%}
+	<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;人物简介</div>
+	<div class="userinfo">
+		{%if 'ol_user' in session and session['ol_user']['name'] != user.name%}<a class="send_msg" href="/msgsend?to={{user.name}}">发消息</a>{%endif%}
+		<img style="margin-top: 3px;" class="avatar" src="{{user.avatar}}" width="68" height="68" />
+		<span class="{% if user_online %}online{%else%}offline{%endif%}"></span>
+		<span>{% if user.gender == 'M'%}<img class="gender" src="https://witalk.cc/r/witalk/m.gender.png" alt="男" width="20" />{%else%}<img class="gender" src="https://witalk.cc/r/witalk/f.gender.png" alt="男" width="20" />{% endif %}</span>
+		<div class="textinfo">
+			<span style="font-size: 18px;font-weight: bold;margin: 2px 12px 0 0;">{{user.name}}</span>
+			<span>{{user.age}}岁</span>·
+			<span>{{user.points}}<img style="float: right;margin: 3px 0 0 2px;" src="https://witalk.cc/r/witalk/points.icon.png" width="20" alt="points" /></span>
+			<p>WITALK第<span style="font-weight: bold;margin: 0 2px;">{{user.id}}</span>号会员<br />{{user.register_date}}加入</p>
+		</div>
+		<div class="signature">
+			<img src="https://witalk.cc/r/witalk/signature.icon.png" width="26" alt="signature" />{% if user.signature %}
+		{{user.signature}}
+		{%else%}
+		这家伙很懒，还没有设置签名！
+		{% endif %}</div>
+	</div>
+	<div class="oth-info">
+		<a href="mailto:{{user.email}}"><img src="https://uoope.com/r/uoope_tech/email.icon.png" width="22" />{{user.email}}</a>
+		{% if user.my_page %}
+		<a href="{{user.my_page}}"><img src="https://uoope.com/r/uoope_tech/home.icon.png" width="22" />{{user.my_page}}</a>
+		{% endif %}
+		{% if user.github_name %}
+		<a href="https://github.com/{{user.github_name}}"><img src="https://uoope.com/r/uoope_tech/github.icon.png" width="22" />{{user.github_name}}</a>
+		{% endif %}
+		{% if user.location %}
+		<a href="https://map.baidu.com/mobile/webapp/search/search/qt=s&wd={{user.location}}"><img src="https://uoope.com/r/uoope_tech/location.icon.png" width="22" />{{user.location}}</a>
+		{% endif %}
+	</div>
+{% endblock %}

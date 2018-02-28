@@ -1,0 +1,142 @@
+{% extends "template.html" %}
+{% block head %}
+{{super()}}
+<title>WITALK - 智慧·讨论</title>
+<style type="text/css">
+	.index-nav {padding: 8px 4px;border-bottom: 1px solid #e7e7e7;line-height: 26px;}
+	.index-nav a {display: inline-block;padding: 0px 4px;color: #444;border-radius: 2px;margin: 2px;}
+	.index-nav a:hover {background: #feeeee;}
+	.index-nav .nd-focus {background: #565656;color: #fcfcfc;}
+	.index-nav .nd-focus:hover {background: #565656;color: #fcfcfc;}
+	.switch{margin: 11px 10px -26px 0; text-align: right;}
+	.switch button {height: 18px;line-height: 18px;width: 38px;border:1px solid #cfcfcf;background: #efefef;box-shadow: 0 0 2px #cbcbcb;font-size: 10px;outline: none;color: #444;}
+	.switch button:first-child {border-radius: 9px 0 0 9px; border-right: none;}
+	.switch button:last-child {border-radius: 0 9px 9px 0;}
+	.switch .selected {}
+	.list {}
+	.list li {border-bottom: 1px solid #eee;padding: 8px 10px;}
+	.list li:last-child {border-bottom: none;}
+	.list li .avatar {float: left;padding: 2px;width: 22px;height: 22px;margin-top: -2px;}
+	.list li .avatar img {border-radius: 2px;}
+	.list li .topic {margin-left: 32px;color: #444;font-size: 16px;}
+	.list li .topic:hover {text-decoration: underline;color: #000;}
+	.list li .topic-info {margin: 0 0 10px 32px;color: #888;font-size: 12px;}
+	.list li .answer_count {float: right;display: inline-block;background: #AAB0C6;color: #f0f0f0;font-weight: bold;height: 16px;line-height: 16px;padding: 0px 8px;border-radius: 8px;margin: 5px 5px 0 0;}
+	.list li .answer_count:hover {background: #778087;}
+	.list li .last_answer_info {margin-left: 32px;color: #888;font-size: 12px;margin-top: 10px;}
+	.list li .forum {display: inline-block;padding: 2px 6px;background: #feeeee;border-radius: 3px;color: #787878;}
+	.list li .forum:hover {background: #ceeeee;color: #222;}
+</style>
+{% endblock %}{% block body %}
+	<div class="index-nav">
+		<a {{all_focus|safe}} href="/">全部</a>
+		<a {{programming_focus|safe}} href="/programming">编程</a>
+		<a {{art_focus|safe}} href="/art">文艺</a>
+		<a {{hot_focus|safe}} href="/hot">热议</a>
+		<a {{trade_focus|safe}} href="/trade">交易</a>
+		<a href="/f/1">问与答</a>
+		<a href="/forums">论坛</a>
+	</div>
+	<div class="switch"><button id="default-btn">默认</button><button id="new-btn">最新</button></div>
+	<div id="list" class="list"></div>
+	<div class="list"><li><a id="get-more" style="text-align: right;" href="javascript:;">数据加载中...</a></li></div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+	function ajax(url, fn){
+		var req = new XMLHttpRequest();
+		req.open('GET', url, true);
+		req.onreadystatechange = function(){
+			if (req.readyState == 4 && req.status == 200 ) { // readyState == 4说明请求已完成
+              		fn.call(this, req.responseText);  //从服务器获得数据
+       		};
+		};
+		req.send();
+	}
+
+	var list = document.getElementById('list');
+	var get_more = document.getElementById('get-more');
+	var pageid = 1;
+	var req_url = ''
+	var default_btn = document.getElementById('default-btn')
+	var new_btn = document.getElementById('new-btn')
+	function request_init(){
+		list.innerHTML = '';
+		pageid = 1;
+		get_more.style = 'block';
+		get_more.innerHTML = '数据加载中...';
+	}
+	default_btn.onclick = function(){
+		request_init();
+		this.style.cssText = 'color: #222;font-weight: bold;';
+		new_btn.style.cssText = '';
+		req_url = '/rtopics/{{quickindex}}';
+		ajax(req_url, function(txt){
+			if(txt == 'None' || txt == '[]'){
+				get_more.innerHTML = '暂无数据';
+				get_more.onclick = null;
+				return;
+			}
+			topics = JSON.parse(txt);
+			for(posi in topics){
+				topic = topics[posi];
+				if(topic.last_reply_date == 'None')
+					last_answer_info = '';
+				else
+					last_answer_info = '<div class="last_answer_info">' + topic.last_reply_date +'前 • <a class="username" href="/profile/'+ topic.last_reply_author.id +'">'+ topic.last_reply_author.name +'</a>最后回复</div>'
+				list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="22" /></a><div class="topic-info"><a class="forum" href="/f/'+ topic.forum.id +'">'+ topic.forum.name +'</a> · <a class="username" href="/profile/'+ topic.author.id+'">'+ topic.author.name +'</a> · '+ topic.post_date +'前</div><a class="topic" href="/t/' + topic.id + '">' + topic.title + '</a><a class="answer_count" href="/t/'+ topic.id +'">'+ topic.answer_count +'</a>'+ last_answer_info +'</li>\n';
+			}
+			get_more.style.display = 'none';
+		});
+	}
+	new_btn.onclick = function(){
+		request_init();
+		this.style.cssText = 'color: #222;font-weight: bold;';
+		default_btn.style.cssText = '';
+		req_url = '/topics/0/' + (pageid++);
+		ajax(req_url, function(txt){
+			if(txt == 'None'){
+				get_more.innerHTML = '暂无数据';
+				get_more.onclick = null;
+				return;
+			}
+			topics = JSON.parse(txt);
+			count = 0;
+			for(posi in topics){
+				topic = topics[posi];
+				list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="22" /></a><div class="topic-info"><a class="forum" href="/f/'+ topic.forum.id +'">'+ topic.forum.name +'</a> · <a class="username" href="/profile/'+ topic.author.id+'">'+ topic.author.name +'</a> · '+ topic.post_date +'前 · '+ topic.answer_count +'回复</div><a class="topic" href="/t/' + topic.id + '">' + topic.title + '</a></li>\n';
+				count++;
+			}
+			if(count < 12) get_more.style.display = 'none';
+			else get_more.innerHTML = '还有，继续浏览';
+		});
+		get_more.onclick = function(){
+			request_new_topics(pageid);
+		}
+	}
+	default_btn.click();
+	
+	function request_new_topics(pageid){
+		get_more.innerHTML = '加载中...';
+		ajax('/topics/0/' + pageid, function(txt){
+			if(txt == 'None'){
+				get_more.innerHTML = '没有了';
+				get_more.onclick = null;
+				return;
+			}
+			topics = JSON.parse(txt);
+			count = 0
+			for(posi in topics){
+				topic = topics[posi];
+				list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="22" /></a><div class="topic-info"><a class="forum" href="/f/'+ topic.forum.id +'">'+ topic.forum.name +'</a> · <a class="username" href="/profile/'+ topic.author.id+'">'+ topic.author.name +'</a> · '+ topic.post_date +'前 · '+ topic.answer_count +'回复</div><a class="topic" href="/t/' + topic.id + '">' + topic.title + '</a></li>\n';
+				count++;
+			}
+			if(count < 12) {
+				get_more.innerHTML = '没有了';
+				get_more.onclick = null;
+			}
+			else get_more.innerHTML = '还有，继续浏览';
+		});
+	}
+</script>
+{% endblock %}

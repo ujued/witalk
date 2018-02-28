@@ -1,0 +1,65 @@
+{%extends 'template.html'%}
+{%block head%}{{super()}}
+<title>我的信箱</title>
+<style type="text/css">
+	form .input-1 {border: 1px solid #cbcbcb;padding: 5px;width: 100%;margin-left: -5px;}
+	form textarea {width: 100%;max-width: 100%;display: block;padding: 5px;border-radius: 2px;margin-left: -5px;border: 1px solid #cbcbcb;}
+	form textarea:focus {border-color: #bbb;box-shadow: 0 0 3px #cecece;}
+	.btn-1 {border: 1px solid #cbcbcb;border-radius: 2px;background: #fff;padding: 3px 15px;box-shadow: 0 0 2px #efefef inset;float: right;margin: 8px -6px 6px 0;} 
+	.btn-1:focus {border-color: #bbb;box-shadow: 0 0 6px #cecece inset;}
+	form {padding: 2px 15px;margin: 0px;}
+	form input {margin: 5px 0;}
+	form .tip {color:red;text-shadow:0 0 1px #ccc;line-height:32px;margin-left:-5px;}
+	.list {margin: 0 10px;}
+	.list li {line-height: 28px;border-bottom: 1px solid #efefef;}
+	.list li:last-child {border-bottom: none;}
+	.info {font-size: 12px;color: #bcbcbc;}
+	.user_l {background: #fff;display: inline-block;height: 22px;line-height: 22px;width:32px;text-align: left;border-radius: 2px;margin-right: 2px;color: #222;}
+	.user {display: inline-block;}
+	.avatar {border-radius: 8px;float: left;margin: 6px 5px 0 0;}
+	.list li .reply {float: right;display: inline-block;padding: 2px 5px;margin-top: 5px;}
+	.list li .content {line-height: 22px;padding: 10px 0;color: #565656;}
+</style>
+{%endblock%}{%block body%}
+<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;{{title|safe}}</div>
+<ul class="list">
+{%if not messages%}
+	<li><a href="javascript:;">暂无消息</a></li>
+{%endif%}
+{%for message in messages%}
+	<li>
+		<div class="info">
+			{% if not noreply %}<a class="reply" href="javascript:;" data-from="{{message.from_user.name}}"><img src="https://witalk.cc/r/witalk/reply.icon.png" height="18" /></a>{% endif %}
+			{% if receive %}<span class="user_l">From:</span><div class="user"><img  class="avatar" src="{{message.from_user.avatar}}" width="16" height="16" /><a href="/profile/{{message.from_user.id}}">{{message.from_user.name}}</a></div><span style="width: 16px;display: inline-block;height: 22px;"></span>{% endif %}{%if send %}
+			<span class="user_l">To:</span><div class="user"><img  class="avatar" src="{{message.to_user.avatar}}" width="16" height="16" /><a href="/profile/{{message.to_user.id}}">{{message.to_user.name}}</a></div>{%endif%} • {{message.send_date}}前
+		</div>
+		<p class="content">{{message.content|markdown|safe}}</p>
+	</li>
+{%endfor%}
+</ul>
+<div class="line"></div>
+<br />
+<form action="/msgsend" method="post">
+	<div style="margin-left: -5px;" class="info">
+		<div class="user">
+			<img style="margin: 1px 5px 0 0px;" class="avatar" src="{{session.ol_user.avatar}}" width="16" height="16" /><a href="/profile/{{session.ol_user.id}}">{{session.ol_user.name}}</a>
+		</div>
+	</div>
+	<input id="msgto" class="input-1" type="text" name="username"  placeholder="To: 用户名" required="required" />
+	<textarea id="msgc" name="content" placeholder="信息内容" required="required"></textarea>
+	<input class="btn-1" type="submit" value="Biu! 发送" />
+</form>
+{%endblock%}
+{%block script%}
+<script type="text/javascript">
+	var msgto = document.getElementById('msgto')
+	var msgc = document.getElementById('msgc')
+	var msgs = document.getElementsByClassName('reply')
+	for(posi in msgs){
+		msgs[posi].onclick = function(){
+			msgto.value = this.getAttribute('data-from');
+			msgc.focus()
+		}
+	}
+</script>
+{%endblock%}

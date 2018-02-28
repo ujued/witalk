@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+	{% block head %}
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=2.0" />
+	<link rel="shortcut icon" href="https://witalk.cc/r/witalk/favicon.ico" />
+	<link rel="bookmark" href="https://witalk.cc/r/witalk/favicon.ico" />
+	<style type="text/css">
+		* {padding: 0;margin: 0;list-style: none;}
+		body {font-size: 14px;max-width: 520px;margin: 0 auto;font-family: "Raleway","Microsoft Jhenghei","Microsoft Yahei","Helvetica Neue",HelveticaNeue,Arial,sans-serif;}
+		a {text-decoration: none;color: #787878;}
+		.username {font-weight: bold;color: #787878;}
+		.nav {padding: 10px;}
+		.nav a {color: #888;}
+		.nav a:hover {color: #666;text-decoration: underline;}
+		.header {padding: 3px 5px;height:38px;background: #ffffff;color: #222;position: relative;}
+		.header .menu {float: right;margin: 0px 0px 0 0;}
+		.header .menu a{margin: 5px;color: #222;padding: 2px;display: inline-block;}
+		.header .menu a:hover {color: #999;}
+		.header .menu_a img {float: left;margin-top: 0px;}
+		.line {background: #fff;height: 1px;border-top: 1px solid #cecece;border-bottom: 1px solid #cecece;border-left: 0px solid #fff;clear: both;position: relative;}
+		.footer {padding: 6px 10px;color: #888;}
+		.online-area {float: right;font-size: 12px;color: #bcbcbc;margin-top: 2px;}
+		.online-flag {float: left;width: 6px;height: 6px;border-radius: 5px;background: green;margin: 6px 3px 0 0;}
+	</style>
+	{% endblock %}
+	<title>{% block title %}{% endblock%}</title>
+</head>
+<body>
+	<div class="header">
+		<a style="float: left;height: 24px;margin-top:8px;margin-left: 3px;" href="/"><img src="https://witalk.cc/r/witalk/witalk.png" height="24" /></a>
+		<div class="menu">
+		{% if session.ol_user %}
+		{% if msgcount() > 0 %}<span style="display: inline-block;background: #ED0A3F;width: 8px;height: 8px;border-radius: 4px;position: absolute;top:10px;right: 55px;"></span>{%endif%}
+		<a class="menu_a" href="/msgbox"><img src="https://witalk.cc/r/witalk/message.png" width="24"></a>
+		<a class="menu_a" href="/home"><img style="border-radius: 12px;" style="" src="{{ session.ol_user.avatar}}" width="24" /></a>
+		{% else %}
+		<a style="float: left;margin-top: 6px;width: 22px;height: 22px;" href="/login"><img src="https://uoope.com/r/uoope_tech/login.png" width="22" /></a>
+		{% endif%}
+		</div>
+	</div>
+	<div class="line"></div>
+	{% block body %}
+	{% endblock%}
+	<div class="line"></div>
+	<div class="footer">
+		&copy;&nbsp;&nbsp;2018&nbsp;&nbsp;WITALK.CC&nbsp;&nbsp;•&nbsp;&nbsp;<a href="/privacy">隐私</a>&nbsp;&nbsp;<a href="https://github.com/ujued/witalk/wiki">Wiki</a>&nbsp;&nbsp;<a href="/about">关于</a>
+		<span class="online-area"><span class="online-flag"></span><span style="font-weight: bold;">{{onlines()|length}}</span>在线</span>
+	</div>
+</body>
+{% block script %}
+{% endblock %}
+</html>

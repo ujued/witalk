@@ -1,0 +1,13 @@
+环境：
+python3
+spawn-fcgi
+nginx
+mysql
+redis
+
+python3 包：
+flask
+flup6
+sqlalchemy
+pymysql
+markdown2

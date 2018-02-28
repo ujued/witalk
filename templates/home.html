@@ -1,0 +1,93 @@
+{%extends 'template.html'%}
+{%block head%}{{super()}}
+	<title>个人中心</title>
+	<style type="text/css">
+		.flashes {margin: 0 10px;color: red;text-shadow: 0 0 1px #eee;}
+		.list {padding: 10px;line-height: 30px;color: #222;}
+		.list li{clear: both;}
+		.edit-info {padding: 10px;margin: 0 5px;display: none;}
+		.edit-info input, .edit-info textarea , .edit-info select {width: 100%;border: 1px solid #bcbcbc;height: 26px;line-height: 26px;padding: 0 5px;margin-left: -5px;}
+		.edit-info textarea {height: 52px;max-width: 100%;}
+		.edit-info select {float: left;}
+		.edit-info input[type="submit"], .edit-info select {display: inline-block;width: auto;padding: 0 12px;background: #fff;box-shadow: 0 0 2px #efefef inset;margin-top: 10px;}
+		.links {padding: 10px;}
+		.links a {display: block;height: 32px;line-height: 32px;border-bottom: 1px solid #efefef;color: #787878;}
+		.links a:hover{color: #222;text-shadow: 0 0 1px #ccc;}
+	</style>
+{%endblock%}{%block body%}
+	<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;个人中心</div>
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			<ul class="flashes">
+			{% for message in messages %}
+				<li>{{ message }}</li>
+			{% endfor %}
+			</ul>
+		{% endif %}
+	{% endwith %}
+	<ul class="list">
+		<li style="border-bottom: 1px solid #efefef;height: 60px;line-height: 22px;"><img style="float: left;margin-right: 8px;" src="{{user.avatar}}" width="50" /><span style="float: right;color: #ccc;font-size: 12px;margin-top: -2px;">Signature</span>{{user.signature}}</li>
+		<li>称呼:<span style="font-weight: bold;">{{user.name}}</span> ({{user.age}}岁, {% if user.gender == 'M'%}男生{%else%}女生{% endif %})</li>
+		<li>UID:{{user.id}}</li>
+		<li>Email:{{user.email}}</li>
+		<li>积分:{{user.points}}分</li>
+	</ul>
+	<form id="edit_area" class="edit-info" action="/chinfo" method="post">
+		<input type="text" name="avatar" placeholder="头像" value="{{user.avatar}}" />
+		<input type="number" name="age" placeholder="年龄" value="{{user.age}}" />
+		<input type="text" name="my_page" placeholder="个人主页"{% if user.my_page %} value="{{user.my_page}}" {% endif %} />
+		<input type="text" name="location" placeholder="当前地理位置"{% if user.location %} value="{{user.location}}" {% endif %} />
+		<input type="text" name="github" placeholder="Github用户名"{% if user.github_name %} value="{{user.github_name}}" {% endif %} />
+		<textarea name="signature" placeholder="个性签名">{% if user.signature %}{{user.signature}}{% endif %}</textarea>
+		<select name="gender">
+			<option value="M">男</option>
+			<option value="F">女</option>
+		</select>
+		<input type="submit" value="提交" />
+	</form>
+	<form id="chpasswd" class="edit-info" action="/chpasswd" method="post">
+		<input type="password" name="oldpasswd" required="required" placeholder="旧密码" />
+		<input type="password" name="newpasswd" required="required" placeholder="新密码" />
+		<input type="password" name="renewpasswd" required="required" placeholder="确认新密码" />
+		<input type="submit" value="提交" />
+	</form>
+	<div class="links">
+		<a href="javascript:;" onclick="open_edit(this);">修改资料</a>
+		<a href="javascript:;" onclick="open_chpasswd(this);">修改密码</a>
+		<a href="/logout?back=/">登出</a>
+	</div>
+{%endblock%}{%block script%}
+<script type="text/javascript">
+	var edit_area = document.getElementById('edit_area');
+	var chpasswd = document.getElementById('chpasswd')
+	function open_edit(obj){
+		edit_area.style.display = 'block';
+		obj.onclick = function(){
+			close_edit(obj);
+		}
+		obj.innerHTML = '不修改了';
+	}
+	function close_edit(obj){
+		edit_area.style.display = 'none';
+		obj.onclick = function(){
+			open_edit(obj);
+		}
+		obj.innerHTML = '修改资料';
+	}
+
+	function open_chpasswd(obj){
+		chpasswd.style.display = 'block';
+		obj.onclick = function(){
+			close_chpasswd(obj);
+		}
+		obj.innerHTML = '不修改了';
+	}
+	function close_chpasswd(obj){
+		chpasswd.style.display = 'none';
+		obj.onclick = function(){
+			open_chpasswd(obj);
+		}
+		obj.innerHTML = '修改密码';
+	}
+</script>
+{%endblock%}

@@ -1,0 +1,28 @@
+{%extends 'template.html'%}
+{%block head%}{{super()}}
+	<title>创建新主题-{{forum.name}}</title>
+	<style type="text/css">
+		form .input-1 {border: 1px solid #cbcbcb;padding: 5px;width: 100%;margin-left: -5px;}
+		form textarea {width: 100%;max-width: 100%;display: block;padding: 5px;border-radius: 2px;margin-left: -5px;border: 1px solid #cbcbcb;}
+		form textarea:focus {border-color: #bbb;box-shadow: 0 0 3px #cecece;}
+		.btn-1 {border: 1px solid #cbcbcb;border-radius: 2px;background: #fff;padding: 3px 15px;box-shadow: 0 0 2px #efefef inset;float: right;margin: 8px -6px 6px 0;} 
+		.btn-1:focus {border-color: #bbb;box-shadow: 0 0 6px #cecece inset;}
+		form {padding: 2px 15px;margin: 0px;}
+		form input {margin: 5px 0;}
+		form .tip {color:red;text-shadow:0 0 1px #ccc;line-height:32px;margin-left:-5px;}
+		.tips {padding: 10px;}
+	</style>
+{%endblock%}{%block body%}
+	<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/forums">分类</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/f/{{forum.id}}">{{forum.name}}</a>&nbsp;&nbsp;›&nbsp;&nbsp;主题创建</div>
+	<form method="post">
+		<div class="tip">{{message}}</div>
+		<input class="input-1" type="text" required="required" name="title" value="{{param.title}}" placeholder="标题" />
+		<textarea class="text-1" rows="8" placeholder="标题能描述清楚，内容可留空" name="content">{{param.content}}</textarea>
+		<input class="btn-1" type="submit" value="立即创建" />
+	</form>
+	<div class="line"></div>
+	<div class="tips">
+		. 支持Markdown语法<br />
+		. 可能会被有删改的发布在<a href="https://uoope.com">UOOPE技术栈</a>
+	</div>
+{%endblock%}

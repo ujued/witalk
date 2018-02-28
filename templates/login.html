@@ -1,0 +1,42 @@
+{%extends 'template.html'%}
+{%block head%}{{super()}}
+	<title>登录</title>
+	<style type="text/css">
+		form{margin: 0 15px;margin-bottom: 60px;}
+		form .input-1 {border: 1px solid #cbcbcb;padding: 5px;width: 100%;margin-left: -5px;}
+		form textarea {width: 100%;max-width: 100%;display: block;padding: 5px;border-radius: 2px;margin-left: -5px;border: 1px solid #cbcbcb;}
+		form textarea:focus {border-color: #bbb;box-shadow: 0 0 3px #cecece;}
+		.btn-1 {border: 1px solid #cbcbcb;border-radius: 1px;background: #fff;padding: 3px 15px;box-shadow: 0 0 2px #efefef inset;float: right;margin: 12px -6px 0 0;} 
+		.btn-1:focus {border-color: #bbb;box-shadow: 0 0 6px #cecece inset;}
+		form .tip {color:red;text-shadow:0 0 1px #ccc;line-height:32px;margin-left:-10px;}
+		form .light {display: block;margin: 10px 0 4px -5px;font-weight: bold;}
+		form .title {margin-left: -10px;margin-bottom: 22px;height: 60px;font-size: 20px;text-shadow: 0 0 1px #f3f3f3;padding-top: 20px;display: inline-block;border-bottom: 2px solid #008151;height: 32px;}
+		.flashes {margin: 0 10px;color: red;text-shadow: 0 0 1px #eee;}
+		.links {padding: 10px 0;line-height: 28px;}
+		.links a {display: block;border: 1px solid #cbcbcb;box-shadow: 0 0 2px #efefef inset;margin:5px 10px;height: 26px;line-height: 26px;text-align: center;color: #343434;}
+	</style>
+{%endblock%}{%block body%}
+	<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;登录</div>
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			<ul class="flashes">
+			{% for message in messages %}
+				<li>{{ message }}</li>
+			{% endfor %}
+			</ul>
+		{% endif %}
+	{% endwith %}
+	<form method="post">
+		<p class="tip">{{message}}</p>
+		<span class="light">帐号:</span>
+		<input class="input-1" type="text" name="id" required="required" placeholder="ID / 常用网名 / Email" />
+		<span class="light">密码:</span>
+		<input class="input-1" type="password" name="password" required="required" placeholder="不少于6位" />
+		<input class="btn-1" type="submit" value="立即登录" />
+	</form>
+	<div class="line"></div>
+	<div class="links">
+		<a href="backpasswd">忘记密码</a>
+		<a href="register">注册新账号</a>
+	</div>
+{%endblock%}
