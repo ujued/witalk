@@ -1,3 +1,4 @@
+import hashlib
 from flask import Blueprint, current_app, request, render_template, session, redirect, flash
 from tools import filter_sql, update_online_users
 
@@ -31,6 +32,7 @@ def  login():
 		message = "密码不少与6位！"
 	else:
 		id, password = filter_sql([id, password])
+		password = hashlib.md5(password.encode('utf-8')).hexdigest()
 		conn = current_app.mysql_engine.connect()
 		if id.isdigit() :
 			user_from_db = conn.execute("select * from user where id=%d  and password='%s'" % (id, password)).first()
@@ -61,6 +63,7 @@ def register():
 	else:
 		conn = current_app.mysql_engine.connect()
 		username, email, password  = filter_sql([username, email, password])
+		password = hashlib.md5(password.encode('utf-8')).hexdigest()
 		user_from_db = conn.execute("select id from user where name='%s' or email='%s'" % (username, email)).first()
 		if user_from_db == None :
 			count = conn.execute("insert into user(name, password, email) values('%s', '%s', '%s')" % (username, password, email)).rowcount

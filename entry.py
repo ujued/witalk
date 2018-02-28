@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import json, markdown2, datetime, time, redis
+import json, markdown2, datetime, time, redis, os
 from flup.server.fcgi import WSGIServer
 from queue import Queue
 from threading import Thread
@@ -17,6 +17,7 @@ def create_app():
     return app
 
 app = create_app()
+app.secret_key = os.urandom(24)
 
 # about online user
 online_usernames = []
@@ -87,7 +88,6 @@ def save_recent_topics():
 		r.set('trade_recent_topic_ids', app.trade_recent_topic_ids)
 Thread(target=save_recent_topics).start()
 
-app.secret_key = '\xe5\xa6\xb2\xdaT\xf6}`T\xafp\x1d\x03\xb5\xd6,\x19\xcb\xb6\xf5;C'
 app.jinja_env.filters['fashion_date'] = get_date_fashion
 app.jinja_env.filters['post_device'] = get_post_device
 app.jinja_env.filters['support_at'] = support_at

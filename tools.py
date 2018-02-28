@@ -88,7 +88,9 @@ def update_online_users(session, app, request):
 	if 'ol_user' in session:
 		username = session['ol_user']['name']
 	else:
-		username = request.cookies.get(hashlib.md5(app.session_cookie_name.encode('utf-8')).hexdigest())
+		username = request.cookies.get(app.session_cookie_name)
+		if username:
+			username = hashlib.md5(username.encode('utf-8')).hexdigest()
 	if username not in online_usernames:
 		online_usernames.append(username)
 		online_users.append(create_user(username, datetime.datetime.now()))
