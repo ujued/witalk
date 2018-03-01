@@ -175,20 +175,28 @@ def chpasswd():
 	newpasswd = request.form['newpasswd']
 	renewpasswd = request.form['renewpasswd']
 	oldpasswd, newpasswd, renewpasswd = filter_sql([oldpasswd, newpasswd, renewpasswd])
-	if oldpasswd != None and len(oldpasswd) > 6 and newpasswd != None and renewpasswd != None and len(newpasswd) > 6 and len(renewpasswd) > 6:
+	if oldpasswd != None and len(oldpasswd) >= 6 and newpasswd != None and renewpasswd != None and len(newpasswd) >= 6 and len(renewpasswd) >= 6:
 		if newpasswd == renewpasswd:
 			conn = current_app.mysql_engine.connect()
-			count = conn.execute("update user set `password`='%s' where id=%d" % (newpasswd, session['ol_user']['id'])).rowcount
+			uid = session['ol_user']['id']
+			if hashlib.md5(oldpasswd.encode('utf-8')).hexdigest() != conn.execute('select password from user where id=%d' % uid).first()[0]:
+				flash('修改失败，密码错误！')
+				return redirect('/home')
+			newpasswd = hashlib.md5(newpasswd.encode('utf-8')).hexdigest()
+			count = conn.execute("update user set `password`='%s' where id=%d" % (newpasswd, uid)).rowcount
 			conn.close()
 			if count == 1:
 				session.pop('ol_user', None)
+				flash('修改成功！请重新登录.')
 				return redirect('/login')
 			else:
 				return 'error.'
 		else:
-			return '两次新密码不一致!'
+			flash('两次新密码不一致!')
+			return redirect('/home')
 	else:
-		return render_template('404.html')
+		flash('安全起见，密码不得少于6位！')
+		return redirect('/home')
 
 @bp.route('/logout')
 def logout():
