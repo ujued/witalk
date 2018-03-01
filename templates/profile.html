@@ -18,7 +18,17 @@
 		.oth-info {padding: 2px 5px 20px 5px;}
 		.oth-info a {display: inline-block;padding: 6px 12px 6px 6px;border-radius: 21px;margin: 6px;height: 22px;line-height: 22px;color: #888;background: #efefef;}
 		.oth-info a img {float: left;margin-right: 5px;margin-top: 0px;}
-		.oth-info a:hover {box-shadow: 0 0 16px #bcbcbc inset;}	
+		.oth-info a:hover {box-shadow: 0 0 16px #bcbcbc inset;}
+		.list {margin: 0 15px;line-height: 20px;}
+		.list li {border-bottom: 1px solid #efefef;padding: 12px 0;}
+		.list li:last-child {border-bottom: none;}
+		.list li a {color: #565656;}
+		.list li a:hover {text-decoration: underline;}
+		.list li .topic-info {font-size: 12px;color: #666;}
+		.list li .topic-info a {display: inline-block;line-height: 12px;padding: 1px 0;color: #787878;}
+		.list li .topic-info a:hover {background: #cecece;}
+		.list li .answer_count {float: right;display: inline-block;background: #efefef;color: #454545;font-weight: bold;height: 14px;line-height: 14px;padding: 0px 6px;border-radius: 7px;margin: 0 0 0 0;font-size: 12px;}
+		.list li .answer_count:hover {background: #778087;}
 	</style>
 {% endblock %}
 {% block body%}
@@ -53,4 +63,60 @@
 		<a href="https://map.baidu.com/mobile/webapp/search/search/qt=s&wd={{user.location}}"><img src="https://uoope.com/r/uoope_tech/location.icon.png" width="22" />{{user.location}}</a>
 		{% endif %}
 	</div>
+	<div class="line"></div>
+	<div id="list" class="list"></div>
+	<div class="list"><li><a id="get-more" style="text-align: right;" href="javascript:;">数据加载中...</a></li></div>
 {% endblock %}
+{%block script%}
+<script type="text/javascript">
+	function ajax(url, fn){
+		var req = new XMLHttpRequest();
+		req.open('GET', url, true);
+		req.onreadystatechange = function(){
+			if (req.readyState == 4 && req.status == 200 ) { // readyState == 4说明请求已完成
+              		fn.call(this, req.responseText);  //从服务器获得数据
+       		};
+		};
+		req.send();
+	}
+	var list = document.getElementById('list');
+	var get_more = document.getElementById('get-more');
+	var pageid = 1;
+	ajax('/mytopics/{{user.id}}/' + (pageid++), function(txt){
+		if(txt == 'None' || txt == '[]'){
+			get_more.innerHTML = '他暂无发布的主题';
+			get_more.onclick = null;
+			return;
+		}
+		topics = JSON.parse(txt);
+		count = 0;
+		for(posi in topics){
+			topic = topics[posi];
+			list.innerHTML += '<li><a href="/t/'+ topic.id +'">'+ topic.title +'</a><a class="answer_count" href="/t/'+ topic.id +'">'+ topic.answer_count +'</a><div class="topic-info"><a href="/f/'+ topic.forum.id +'">'+ topic.forum.name +'</a> • '+ topic.post_date +'前发布</div></li>\n';
+			count++;
+		}
+		if(count < 12)
+			get_more.style.display = 'none';
+		else
+			get_more.innerHTML = '还有，继续加载'
+	});
+	get_more.onclick = function(){
+		ajax('/mytopics/{{user.id}}/' + (pageid++), function(txt){
+			if(txt == 'None' || txt == '[]'){
+				get_more.style.display = 'none';
+				get_more.onclick = null;
+				return;
+			}
+			topics = JSON.parse(txt);
+			count = 0;
+			for(posi in topics){
+				topic = topics[posi];
+				list.innerHTML += '<li><a href="/t/'+ topic.id +'">'+ topic.title +'</a><div class="topic-info"><a href="/f/'+ topic.forum.id +'">'+ topic.forum.name +'</a> • '+ topic.post_date +'前发布</div></li>\n';
+				count++;
+			}
+			if(count < 12)
+				get_more.style.display = 'none';
+		});
+	}
+</script>
+{%endblock%}

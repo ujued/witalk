@@ -2,9 +2,10 @@
 {% block head %}{{super()}}
 	<title>{{forum.name}}</title>
 	<style type="text/css">
+		.flashes {margin: 0 10px;color: red;text-shadow: 0 0 1px #eee;}
 		.forum-info {float: right;}
-		.forum-info span:nth-child(1) {font-size: 10px;color: #aaa;}
-		.forum-info span:nth-child(2) {color: #888;font-size: 12px;}
+		.forum-info span:nth-child(1), .forum-info span:nth-child(2) {font-size: 10px;color: #aaa;}
+		.forum-info span:nth-child(3) {color: #888;font-size: 12px;}
 		.avatar {float: left;display: inline-block;width: 22px;height: 22px;padding: 2px;}
 		.avatar img {border-radius: 2px;}		
 		.post {display: block;border: 1px solid #cbcbcb;box-shadow: 0 0 2px #efefef inset;margin:5px 10px;height: 26px;line-height: 26px;text-align: center;color: #343434;}
@@ -18,7 +19,29 @@
 	</style>
 {% endblock %}
 {% block body %}
-	<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/forums">分类</a>&nbsp;&nbsp;›&nbsp;&nbsp;{{forum.name}}<div class="forum-info"><span>主题</span>&nbsp;<span>{{topic_count}}</span></div></div>
+	<div class="nav">
+		<a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/forums">分类</a>&nbsp;&nbsp;›&nbsp;&nbsp;{{forum.name}}
+		<div class="forum-info">
+			{%if 'ol_user' in session%}
+				{%if collected %}
+				<span>已收藏</span>
+				{%else%}
+				<span><a href="/collect/f/{{forum.id}}?back=/f/{{forum.id}}">加入收藏</a></span>
+				{%endif%}&nbsp;&nbsp;
+			{%else%}
+			<span></span>
+			{%endif%}
+			<span>主题</span>&nbsp;<span>{{topic_count}}</span></div>
+	</div>
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			<ul class="flashes">
+			{% for message in messages %}
+				<li>{{ message }}</li>
+			{% endfor %}
+			</ul>
+		{% endif %}
+	{% endwith %}
 	{% if session.ol_user%}<a class="post" href="/new/{{forum.id}}">创建新主题</a>{% endif%}
 	<div id="list" class="list"></div>
 	<div class="list"><li><a id="get-more" style="text-align: right;" href="javascript:;">数据加载中...</a></li></div>

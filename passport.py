@@ -43,6 +43,9 @@ def  login():
 			message = '帐号或密码错误！'
 		else:
 			session['ol_user'] = create_user_dict(user_from_db)
+			backurl= request.args.get('back')
+			if backurl:
+				return redirect(backurl)
 			return redirect('/home')
 	return render_template('login.html', message = message)
 

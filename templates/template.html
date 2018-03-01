@@ -33,6 +33,7 @@
 		<div class="menu">
 		{% if session.ol_user %}
 		{% if msgcount() > 0 %}<span style="display: inline-block;background: #ED0A3F;width: 8px;height: 8px;border-radius: 4px;position: absolute;top:10px;right: 55px;"></span>{%endif%}
+		<a class="menu_a" href="/collections"><img src="https://witalk.cc/r/witalk/collection.png" width="24"></a>
 		<a class="menu_a" href="/msgbox"><img src="https://witalk.cc/r/witalk/message.png" width="24"></a>
 		<a class="menu_a" href="/home"><img style="border-radius: 12px;" style="" src="{{ session.ol_user.avatar}}" width="24" /></a>
 		{% else %}

@@ -153,10 +153,14 @@ def list(id):
 	conn = current_app.mysql_engine.connect()
 	forum = conn.execute('select * from forum where id=%d' % id).first()
 	topic_count = conn.execute('select count(id) from topic where forum_id=%d' % id).first()[0]
-	conn.close()
 	if forum is None:
 		return render_template('404.html')
-	return render_template('forum.html', forum = forum, topic_count = topic_count)
+	collected = False
+	if 'ol_user' in session:
+		if conn.execute("select count(id) from collection where collect_cate='f' and collect_id=%d and owner_id=%d" % (id, session['ol_user']['id'])).first()[0] != 0:
+			collected = True
+	conn.close()
+	return render_template('forum.html', forum = forum, topic_count = topic_count, collected = collected)
 
 def create_topic_item(row, conn):
 	user = conn.execute('select id,`name`, avatar from user where id=%d' % row.author_id).first()
@@ -233,6 +237,29 @@ def rtopics(cate):
 	conn.close()
 	return json.dumps(dumps_topics, ensure_ascii = False)
 
+@bp.route('/mytopics/<int:uid>/<int:pid>')
+def mytopics(uid, pid):
+	json_topics = []
+	conn = current_app.mysql_engine.connect()
+	count = conn.execute('select count(id) from topic where author_id=%d' % uid).first()[0]
+	if count == 0:
+		return 'None'
+	page_count = request.args.get('count')
+	if page_count :
+		page_info = page_turning_info(count, pid, int(page_count))
+	else: 
+		page_info = page_turning_info(count, pid)
+
+	if not page_info['have']:
+		return 'None'
+	sql = 'select * from topic where author_id=%d limit %s' % (uid, page_info['limit'])
+	topics = conn.execute(sql).fetchall()
+	topics.reverse()
+	for topic in topics:
+		json_topics.append(create_topic_item(topic, conn))
+	conn.close()
+	return json.dumps(json_topics, ensure_ascii = False)
+
 @bp.route('/t/<int:id>')
 def view(id):
 	update_online_users(session, current_app, request)
@@ -254,8 +281,9 @@ def view(id):
 			'author_id':last_answer_author.id,
 			'post_date':last_answer_info_row.post_date
 		}
+	collect_count = conn.execute("select count(id) from collection where collect_id=%d and collect_cate='t'" % id).first()[0]
 	conn.close()
-	return render_template('topic.html', topic = topic, forum = forum, author = author, answer_count = answer_count, last_answer_info = last_answer_info)
+	return render_template('topic.html', topic = topic, forum = forum, author = author, answer_count = answer_count, collect_count = collect_count, last_answer_info = last_answer_info)
 
 def create_answer_item(row, conn):
 	user = conn.execute('select id,`name`, avatar from user where id=%d' % row.author_id).first()

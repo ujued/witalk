@@ -35,9 +35,9 @@ def update_oluser_date():
 				user['last_time'] = datetime.datetime.now()
 def update_online_user():
 	while True:
-		time.sleep(180)
+		time.sleep(300)
 		for user in online_users:
-			if (datetime.datetime.now() - user['last_time']).seconds > 120:
+			if (datetime.datetime.now() - user['last_time']).seconds > 180:
 				online_users.remove(user)
 				online_usernames.remove(user['name'])
 Thread(target=update_oluser_date).start()
@@ -98,11 +98,13 @@ from witalk import bp as witalk_bp
 from passport import bp as passport_bp
 from nav import bp as nav_bp
 from message import bp as message_bp
+from collection import bp as collections_bp
 
 app.register_blueprint(witalk_bp)
 app.register_blueprint(passport_bp)
 app.register_blueprint(nav_bp)
 app.register_blueprint(message_bp)
+app.register_blueprint(collections_bp)
 
 @app.template_global('msgcount')
 def msgcount():

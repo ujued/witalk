@@ -2,12 +2,17 @@
 {%block head%}{{super()}}
 	<title>{{topic.title}}</title>
 	<style type="text/css">
+		.flashes {margin: 0 10px;color: red;text-shadow: 0 0 1px #eee;}	
 		#avatar {display: inline-block;width: 38px;height: 38px;float: right;margin-right: 0px;padding: 2px;}
 		#avatar img {border-radius: 4px;}
 		.title {padding: 0 10px 5px 10px;font-size: 20px;color: #111;line-height: 28px;margin-top: 0px;}
 		.info {font-size: 12px;color: #999;padding: 2px 0 5px 0px;margin: 0 10px;}
-		.content {padding: 10px 0;margin: 0 10px;line-height: 30px;color: #222;border-top: 1px solid #efefef;}
+		.content {padding: 8px 0;margin: 0 10px;line-height: 30px;color: #222;border-top: 1px solid #efefef;}
 		.content a {color: #787878;font-weight: bold;}
+		.operate-area {text-align: right;padding: 6px 10px;border-top: 1px solid #efefef;}
+		.operate-area span {font-size: 10px;color: #ccc;}
+		.operate-area a {display: inline-block;height: 16px;line-height: 16px;padding: 2px 5px;color: #787878;border: 1px solid #e0e0e0;background: #efefef;border-radius: 2px;margin-left: 8px;font-size: 12px;}
+		.operate-area a:hover {box-shadow: 0 0 8px #e0e0e0 inset;}
 		.ans-tit {padding: 3px 0;margin: 10px;border-bottom: 1px solid #e2e2e2;color: #676767;font-size: 12px;}
 		.answer, .list {margin: 0 10px;}
 		.list {margin-bottom: 5px;}
@@ -28,9 +33,19 @@
 	</style>
 {%endblock%}{%block body%}
 	<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/forums">分类</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/f/{{forum.id}}">{{forum.name}}</a>&nbsp;&nbsp;›&nbsp;&nbsp;主题详情<a id="avatar" href="/profile/{{author.id}}"><img src="{{author.avatar}}" width="38" /></a></div>
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			<ul class="flashes">
+			{% for message in messages %}
+				<li>{{ message }}</li>
+			{% endfor %}
+			</ul>
+		{% endif %}
+	{% endwith %}
 	<div class="title">{{topic.title}}</div>
 	<div class="info">{{topic.post_date|fashion_date}}前 · <a class="username" href="/profile/{{author.id}}">{{author.name}}</a> · {{topic.view_count}} 次点击{% if topic.user_agent %} · via {{topic.user_agent|post_device}}{% endif%}</div>
 	{% if topic.content %}<div class="content">{{topic.content|support_at|markdown|safe}}</div>{% endif %}
+	{% if 'ol_user' in session %}<div class="operate-area">{% if collect_count > 0 %}<span>{{collect_count}}人收藏</span>{%endif%}<a href="/collect/t/{{topic.id}}?back=/t/{{topic.id}}">加入收藏</a></div>{% endif %}
 	<div class="line"></div>
 	<div class="ans-tit"><span style="font-style:italic;font-size: 14px;">{{answer_count}}</span>&nbsp;&nbsp;回复{% if last_answer_info %} <span style="font-weight: bold;font-size: 14px;">|</span> The last by  <a style="color: #888;font-weight: bold;" href="/profile/{{last_answer_info.author_id}}">{{last_answer_info.author_name}}</a> at {{last_answer_info.post_date}} {% endif %}</div>
 	<div id="list" class="answer"></div>
