@@ -181,6 +181,7 @@ def chpasswd():
 			uid = session['ol_user']['id']
 			if hashlib.md5(oldpasswd.encode('utf-8')).hexdigest() != conn.execute('select password from user where id=%d' % uid).first()[0]:
 				flash('修改失败，密码错误！')
+				conn.close()
 				return redirect('/home')
 			newpasswd = hashlib.md5(newpasswd.encode('utf-8')).hexdigest()
 			count = conn.execute("update user set `password`='%s' where id=%d" % (newpasswd, uid)).rowcount

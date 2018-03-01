@@ -140,7 +140,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'ujued','ujued.','ujued@qq.com','2018-02-17 22:04:07','M',23,31,'https://i.niupic.com/images/2018/02/28/bEiWPw.jpg','虽不能行万里路，但也要读万卷书。','https://uoope.com','ujued','济南',NULL);
+INSERT INTO `user` VALUES (1,'ujued','5a8b7f262fafb758828c2513e0306e75','ujued@qq.com','2018-02-17 22:04:07','M',23,31,'https://i.niupic.com/images/2018/02/28/bEiWPw.jpg','虽不能行万里路，但也要读万卷书。','https://uoope.com','ujued','济南',NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
