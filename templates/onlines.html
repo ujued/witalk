@@ -1,0 +1,20 @@
+{%extends 'template.html'%}
+{%block head%}{{super()}}
+<title>WITALK在线人员</title>
+<style type="text/css">
+	.list {margin: 0 10px;}
+	.list li {padding: 10px 0;line-height: 22px;border-bottom: 1px solid #efefef;}
+	.list li:last-child {border-bottom: none;}
+	.list li .last_time {font-size: 12px;color: #565656;}
+</style>
+{%endblock%}{%block body%}
+<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;在线人员</div>
+<ul class="list">
+	{%if onlines()|length == 0%}
+	<li><a href="javascript:;">暂无人在线</a></li>
+	{%endif%}
+	{% for online in onlines()%}
+	<li>{%if '•' in online.name %}{{online.name}}{%else%}<a href="/profile/{{online.name}}">{{online.name}}</a> • <a href="/msgsend?to={{online.name}}">发消息</a>{%endif%}<div class="last_time">{{online.last_time|fashion_date}}前最后活动</div></li>
+	{%endfor%}
+</ul>
+{%endblock%}

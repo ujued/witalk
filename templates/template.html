@@ -15,14 +15,15 @@
 		.nav a {color: #888;}
 		.nav a:hover {color: #666;text-decoration: underline;}
 		.header {padding: 3px 5px;height:38px;background: #ffffff;color: #222;position: relative;}
-		.header .menu {float: right;margin: 0px -2px 0 0;}
+		.header .menu {float: right;margin: 0px -1px 0 0;}
 		.header .menu a{margin: 5px 3px;color: #222;padding: 2px;display: inline-block;}
 		.header .menu a:hover {color: #999;}
 		.header .menu_a img {float: left;margin-top: 0px;}
-		.line {background: #fff;height: 1px;border-top: 1px solid #cecece;border-bottom: 1px solid #cecece;border-left: 0px solid #fff;clear: both;position: relative;}
+		.line {background: #fff;height: 1px;border-top: 1px solid #EAC0C6;border-bottom: 1px solid #EAC0C6;border-left: 0px solid #fff;clear: both;position: relative;}
 		.footer {padding: 6px 10px;color: #888;}
 		.online-area {float: right;font-size: 12px;color: #bcbcbc;margin-top: 2px;}
 		.online-flag {float: left;width: 6px;height: 6px;border-radius: 5px;background: green;margin: 6px 3px 0 0;}
+		.flashes {margin: 6px 10px 0 10px;color: red;text-shadow: 0 0 1px #eee;}	
 	</style>
 	{% endblock %}
 	<title>{% block title %}{% endblock%}</title>
@@ -33,7 +34,6 @@
 		<div class="menu">
 		{% if session.ol_user %}
 		{% if msgcount() > 0 %}<span style="display: inline-block;background: #ED0A3F;width: 8px;height: 8px;border-radius: 4px;position: absolute;top:10px;right: 55px;"></span>{%endif%}
-		<a class="menu_a" href="/collections"><img src="https://witalk.cc/r/witalk/collection.png" width="24"></a>
 		<a class="menu_a" href="/msgbox"><img src="https://witalk.cc/r/witalk/message.png" width="24"></a>
 		<a class="menu_a" href="/home"><img style="border-radius: 12px;" style="" src="{{ session.ol_user.avatar}}" width="24" /></a>
 		{% else %}
@@ -42,12 +42,21 @@
 		</div>
 	</div>
 	<div class="line"></div>
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			<ul class="flashes">
+			{% for message in messages %}
+				<li>{{ message }}</li>
+			{% endfor %}
+			</ul>
+		{% endif %}
+	{% endwith %}
 	{% block body %}
 	{% endblock%}
 	<div class="line"></div>
 	<div class="footer">
 		&copy;&nbsp;&nbsp;2018&nbsp;&nbsp;WITALK.CC&nbsp;&nbsp;•&nbsp;&nbsp;<a href="/privacy">隐私</a>&nbsp;&nbsp;<a href="/about">关于</a>
-		<span class="online-area"><span class="online-flag"></span><span style="font-weight: bold;">{{onlines()|length}}</span>在线</span>
+		<span class="online-area"><span class="online-flag"></span><a href="/onlines"><span style="font-weight: bold;">{{onlines()|length}}</span>在线</span></a>
 	</div>
 </body>
 {% block script %}

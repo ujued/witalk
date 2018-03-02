@@ -2,7 +2,6 @@
 {%block head%}{{super()}}
 	<title>{{topic.title}}</title>
 	<style type="text/css">
-		.flashes {margin: 0 10px;color: red;text-shadow: 0 0 1px #eee;}	
 		#avatar {display: inline-block;width: 38px;height: 38px;float: right;margin-right: 0px;padding: 2px;}
 		#avatar img {border-radius: 4px;}
 		.title {padding: 0 10px 5px 10px;font-size: 20px;color: #111;line-height: 28px;margin-top: 0px;}
@@ -33,15 +32,6 @@
 	</style>
 {%endblock%}{%block body%}
 	<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/forums">分类</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/f/{{forum.id}}">{{forum.name}}</a>&nbsp;&nbsp;›&nbsp;&nbsp;主题详情<a id="avatar" href="/profile/{{author.id}}"><img src="{{author.avatar}}" width="38" /></a></div>
-	{% with messages = get_flashed_messages() %}
-		{% if messages %}
-			<ul class="flashes">
-			{% for message in messages %}
-				<li>{{ message }}</li>
-			{% endfor %}
-			</ul>
-		{% endif %}
-	{% endwith %}
 	<div class="title">{{topic.title}}</div>
 	<div class="info">{{topic.post_date|fashion_date}}前 · <a class="username" href="/profile/{{author.id}}">{{author.name}}</a> · {{topic.view_count}} 次点击{% if topic.user_agent %} · via {{topic.user_agent|post_device}}{% endif%}</div>
 	{% if topic.content %}<div class="content">{{topic.content|support_at|markdown|safe}}</div>{% endif %}

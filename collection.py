@@ -1,5 +1,5 @@
 from flask import Blueprint, current_app, request, render_template, redirect, session, flash
-from tools import get_date_fashion, filter_sql, update_online_users
+from tools import get_date_fashion, filter_sql
 from witalk import create_topic_item
 
 bp = Blueprint('collection', __name__)

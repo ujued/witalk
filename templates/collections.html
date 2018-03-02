@@ -2,50 +2,36 @@
 {%block head%}{{super()}}
 <title>我的收藏</title>
 <style type="text/css">
-	.flashes {margin: 0 10px;color: red;text-shadow: 0 0 1px #eee;}
 	.title {height: 26px;border-bottom: 1px solid #efefef;line-height: 26px;margin: 0 10px;}
 	.f_list{margin: 0 10px;line-height: 28px;padding: 2px 0 12px 0;}
 	.f_list li{display: inline-block;margin-right: 10px;}
 	.f_list li a:hover {text-decoration: underline;color: #222;}
-	.t_list {margin: 0 10px;}
-	.t_list li {border-bottom: 1px solid #eee;padding: 8px 0px;}
+	
+	.t_list {margin: 0 10px;line-height: 20px;}
+	.t_list li {border-bottom: 1px solid #efefef;padding: 12px 0;}
 	.t_list li:last-child {border-bottom: none;}
-	.t_list li .avatar {float: left;padding: 2px;width: 22px;height: 22px;margin-top: -2px;}
-	.t_list li .avatar img {border-radius: 2px;}
-	.t_list li .topic {margin-left: 32px;color: #444;font-size: 16px;}
-	.t_list li .topic:hover {text-decoration: underline;color: #000;}
-	.t_list li .topic-info {margin: 0 0 10px 32px;color: #888;font-size: 12px;}
-	.t_list li .answer_count {float: right;display: inline-block;background: #AAB0C6;color: #f0f0f0;font-weight: bold;height: 16px;line-height: 16px;padding: 0px 8px;border-radius: 8px;margin: 5px 5px 0 0;}
-	.t_list li .answer_count:hover {background: #778087;}
-	.t_list li .last_answer_info {margin-left: 32px;color: #888;font-size: 12px;margin-top: 10px;}
-	.t_list li .forum {display: inline-block;padding: 2px 6px;background: #feeeee;border-radius: 3px;color: #787878;}
-	.t_list li .forum:hover {background: #ceeeee;color: #222;}
+	.t_list li a {color: #565656;}
+	.t_list li a:hover {text-decoration: underline;}
+	.t_list li .topic-info {font-size: 12px;color: #666;}
+	.t_list li .topic-info a {display: inline-block;line-height: 12px;padding: 1px 0;color: #787878;}
+	.t_list li .topic-info a:hover {background: #cecece;}
+	.t_list li .answer_count {float: right;display: inline-block;background: #efefef;color: #454545;font-weight: bold;height: 14px;line-height: 14px;padding: 0px 6px;border-radius: 7px;margin: 2px 0 0 0;font-size: 12px;}
+	.list li .answer_count:hover {background: #ccc;}
 </style>
 {%endblock%}{%block body%}
-<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/home">Home</a>&nbsp;&nbsp;›&nbsp;&nbsp;我的收藏</div>
-{% with messages = get_flashed_messages() %}
-	{% if messages %}
-		<ul class="flashes">
-		{% for message in messages %}
-			<li>{{ message }}</li>
-		{% endfor %}
-		</ul>
-	{% endif %}
-{% endwith %}
-<div class="title">收藏的论坛</div>
+<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/home">个人中心</a>&nbsp;&nbsp;›&nbsp;&nbsp;我的收藏</div>
+<div class="title"><img style="float: left;margin: 1px 3px 0 0;" src="https://witalk.cc/r/witalk/collection.png" height="16" alt="收藏" />收藏的论坛</div>
 <ul class="f_list">
 {% if f_collections|length == 0 %}<li><a href="javascript:;">暂无收藏节点</a></li>{% endif%}
 {%for collection in f_collections%}
 	<li><a href="/f/{{collection.forum.id}}">{{collection.forum.name}}</a></li>
 {%endfor%}
 </ul>
-<div class="title">收藏的主题</div>
+<div class="title"><img style="float: left;margin: 1px 3px 0 0;" src="https://witalk.cc/r/witalk/collection.png" height="16" alt="收藏" />收藏的主题</div>
 <ul class="t_list">
 {% if t_collections|length == 0 %}<li><a href="javascript:;">暂无收藏主题</a></li>{% endif%}
 {%for collection in t_collections%}
-	<li>
-		<a class="avatar" href="/profile/{{collection.topic.author.id}}"><img src="{{collection.topic.author.avatar}}" width="22" /></a><div class="topic-info"><a class="forum" href="/f/{{collection.topic.forum.id}}">{{collection.topic.forum.name}}</a> · <a class="username" href="/profile/{{collection.topic.author.id}}">{{collection.topic.author.name}}</a> · {{collection.topic.post_date}}前 · {{collection.topic.answer_count}}回复</div><a class="topic" href="/t/{{collection.topic.id}}">{{collection.topic.title}}</a>
-	</li>
+	<li><a href="/t/{{collection.topic.id}}">{{collection.topic.title}}</a><a class="answer_count" href="/t/{{collection.topic.id}}">{{collection.topic.answer_count}}</a><div class="topic-info"><a href="/profile/{{collection.topic.author.id}}">{{collection.topic.author.name}}</a> • <a href="/f/{{collection.topic.forum.id}}">{{collection.topic.forum.name}}</a> • {{collection.collect_date}}前收藏</div></li>
 {%endfor%}
 </ul>
 {%endblock%}

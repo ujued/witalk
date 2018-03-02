@@ -1,11 +1,12 @@
-from flask import Blueprint, current_app, request, render_template, redirect, session
-from tools import get_date_fashion, filter_sql, update_online_users
+from flask import Blueprint, current_app, request, render_template, redirect, session, flash
+from tools import get_date_fashion, filter_sql
 
 bp = Blueprint('message', __name__)
 def create_message_item(row, conn):
 	from_user = conn.execute('select id,`name`,avatar from user where id=%d' % row.from_id).first()
 	to_user = conn.execute('select id,`name`,avatar from user where id=%d' % row.to_id).first()
 	return {
+		'id':row.id,
 		'content':row.content,
 		'from_user':{
 			'id':from_user.id,
@@ -23,11 +24,10 @@ def create_message_item(row, conn):
 @bp.route('/msgbox')
 def read_messages():
 	if 'ol_user' not in session:
-		return redirect('/login?back=/messages')
-	update_online_users(session, current_app, request)
+		return redirect('/login?back=/msgbox')
 	user = session['ol_user']
 	conn = current_app.mysql_engine.connect()
-	read_messages = conn.execute('select * from message where to_id=%d and readed=0' % user['id']).fetchall()
+	read_messages = conn.execute('select * from message where to_id=%d and readed=0 and (first_del_id is null or first_del_id<>%d)' % (user['id'], user['id'])).fetchall()
 	conn.execute('update message set readed=1 where to_id=%d and readed=0' % user['id'])
 	messages = []
 	for message in read_messages:
@@ -39,11 +39,10 @@ def read_messages():
 @bp.route('/msgbox/all')
 def all_messages():
 	if 'ol_user' not in session:
-		return redirect('/login?back=/messages/all')
-	update_online_users(session, current_app, request)
+		return redirect('/login?back=/msgbox/all')
 	user = session['ol_user']
 	conn = current_app.mysql_engine.connect()
-	all_messages = conn.execute('select * from message where to_id=%d' % user['id']).fetchall()
+	all_messages = conn.execute('select * from message where to_id=%d and (first_del_id is null or first_del_id<>%d)' % (user['id'], user['id'])).fetchall()
 	messages = []
 	for message in all_messages:
 		messages.append(create_message_item(message, conn))
@@ -54,11 +53,10 @@ def all_messages():
 @bp.route('/msgbox/send')
 def send_messages():
 	if 'ol_user' not in session:
-		return redirect('/login?back=/messages/all')
-	update_online_users(session, current_app, request)
+		return redirect('/login?back=/msgbox/all')
 	user = session['ol_user']
 	conn = current_app.mysql_engine.connect()
-	send_messages = conn.execute('select * from message where from_id=%d' % user['id']).fetchall()
+	send_messages = conn.execute('select * from message where from_id=%d and (first_del_id is null or first_del_id<>%d)' % (user['id'], user['id'])).fetchall()
 	messages = []
 	for message in send_messages:
 		messages.append(create_message_item(message, conn))
@@ -74,7 +72,6 @@ def send_message():
 		to_user = None
 		if request.args.get('to'):
 			to_user = request.args.get('to')
-		update_online_users(session, current_app, request)
 		import urllib
 		to_user = urllib.parse.unquote(to_user)
 		if "'" in to_user:
@@ -101,3 +98,19 @@ def send_message():
 	conn.close()
 	return render_template('msgsend.html', message = message)
 
+@bp.route('/msgdel/<int:id>')
+def msgdel(id):
+	if 'ol_user' not in session:
+		return redirect('/login')
+	user = session['ol_user']
+	conn = current_app.mysql_engine.connect()
+	first_del_id = conn.execute('select first_del_id from message where id=%d and (from_id=%d or to_id=%d)' % (id, user['id'], user['id'])).first()[0]
+	if first_del_id and (first_del_id != user['id']):
+		conn.execute('delete from message where id=%d' % id)
+	else:
+		conn.execute('update message set first_del_id=%d where id=%d and (from_id=%d or to_id=%d)' % (user['id'], id, user['id'], user['id']))
+	flash('已删除！')
+	backurl = request.args.get('back')
+	if backurl:
+		return redirect(backurl)
+	return redirect('/msgbox/all')

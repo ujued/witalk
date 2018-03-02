@@ -11,14 +11,14 @@
 	form input {margin: 5px 0;}
 	form .tip {color:red;text-shadow:0 0 1px #ccc;line-height:32px;margin-left:-5px;}
 	.list {margin: 0 10px;}
-	.list li {line-height: 28px;border-bottom: 1px solid #efefef;}
+	.list li {line-height: 28px;border-bottom: 1px solid #efefef;padding: 2px 0 12px 0;}
 	.list li:last-child {border-bottom: none;}
-	.info {font-size: 12px;color: #bcbcbc;}
-	.user_l {background: #fff;display: inline-block;height: 22px;line-height: 22px;width:32px;text-align: left;border-radius: 2px;margin-right: 2px;color: #222;}
-	.user {display: inline-block;}
-	.avatar {border-radius: 8px;float: left;margin: 6px 5px 0 0;}
-	.list li .reply {float: right;display: inline-block;padding: 2px 5px;margin-top: 5px;}
-	.list li .content {line-height: 22px;padding: 10px 0;color: #565656;}
+	.list li .info {font-size: 12px;color: #bcbcbc;}
+	.list li .user_l {background: #fff;display: inline-block;height: 22px;line-height: 22px;width:32px;text-align: left;border-radius: 2px;margin-right: 2px;color: #222;}
+	.list li .user {display: inline-block;}
+	.list li .avatar {border-radius: 8px;float: left;margin: 5px 5px 0 0;}
+	.list li .reply, .list li .del {float: right;display: inline-block;padding: 2px;margin: 5px 0 0 5px;height: 18px;width: 18px;}
+	.list li .content {line-height: 22px;color: #565656;}
 </style>
 {%endblock%}{%block body%}
 <div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;{{title|safe}}</div>
@@ -30,10 +30,11 @@
 	<li>
 		<div class="info">
 			{% if not noreply %}<a class="reply" href="javascript:;" data-from="{{message.from_user.name}}"><img src="https://witalk.cc/r/witalk/reply.icon.png" height="18" /></a>{% endif %}
+			<a class="del" href="javascript:;" data-msgid="{{message.id}}" data-back="{%if receive%}all{%else%}send{%endif%}"><img src="https://witalk.cc/r/witalk/delete.png" height="18" alt="del"/></a>
 			{% if receive %}<span class="user_l">From:</span><div class="user"><img  class="avatar" src="{{message.from_user.avatar}}" width="16" height="16" /><a href="/profile/{{message.from_user.id}}">{{message.from_user.name}}</a></div><span style="width: 16px;display: inline-block;height: 22px;"></span>{% endif %}{%if send %}
 			<span class="user_l">To:</span><div class="user"><img  class="avatar" src="{{message.to_user.avatar}}" width="16" height="16" /><a href="/profile/{{message.to_user.id}}">{{message.to_user.name}}</a></div>{%endif%} • {{message.send_date}}前
 		</div>
-		<p class="content">{{message.content|markdown|safe}}</p>
+		<div class="content">{{message.content|markdown|safe}}</div>
 	</li>
 {%endfor%}
 </ul>
@@ -45,7 +46,7 @@
 			<img style="margin: 1px 5px 0 0px;" class="avatar" src="{{session.ol_user.avatar}}" width="16" height="16" /><a href="/profile/{{session.ol_user.id}}">{{session.ol_user.name}}</a>
 		</div>
 	</div>
-	<input id="msgto" class="input-1" type="text" name="username"  placeholder="To: 用户名" required="required" />
+	<input id="msgto" class="input-1" type="text" name="username"  placeholder="To" required="required" />
 	<textarea id="msgc" name="content" placeholder="信息内容" required="required"></textarea>
 	<input class="btn-1" type="submit" value="Biu! 发送" />
 </form>
@@ -54,11 +55,19 @@
 <script type="text/javascript">
 	var msgto = document.getElementById('msgto')
 	var msgc = document.getElementById('msgc')
-	var msgs = document.getElementsByClassName('reply')
-	for(posi in msgs){
-		msgs[posi].onclick = function(){
-			msgto.value = this.getAttribute('data-from');
-			msgc.focus()
+	var reply_btns = document.getElementsByClassName('reply')
+	var del_btns = document.getElementsByClassName('del')
+	for(posi in del_btns){
+		if(reply_btns.length > 0){
+			reply_btns[posi].onclick = function(){
+				msgto.value = this.getAttribute('data-from');
+				msgc.focus()
+			}
+		}
+		del_btns[posi].onclick = function(){
+			if(confirm("不可恢复，确认删除吗？")){
+				window.location.href = '/msgdel/' + this.getAttribute('data-msgid') + '?back=/msgbox/' + this.getAttribute('data-back');
+			}
 		}
 	}
 </script>

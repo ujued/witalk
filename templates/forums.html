@@ -11,9 +11,12 @@
 		.list {width: 80%;}
 		.list a {margin-left: 12px;color: #787878;display: inline-block;line-height: 16px;height: 16px;}
 		.list a:hover {text-decoration: underline;}
+		.tip {padding: 10px;color: #666;margin: -5px 0 5px 0;}
+		.tip span {margin: 2px;font-weight: bold;}
 	</style>
 {%endblock%}{%block body%}
 	<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;论坛分类</div>
+	<div class="tip">现有论坛节点<span>{{forum_count}}</span>个</div>
 	<div class="cate">信息工程</div>
 	<div class="list">
 		<a href="/f/2">程序员</a>

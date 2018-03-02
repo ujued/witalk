@@ -47,6 +47,14 @@ def get_post_device(user_agent):
 	if user_agent is None:
 		return None
 	device = user_agent.split(')')[0].split('; ')[-1]
+	konwns_rel_devices = ['Letv X500', 'vivo X9', 'PRA-AL00X', 'Linux', 'iPhone OS', 'google.com', 'baidu.com']
+	konwns_devices = ['Le 1s', 'vivo X9', '荣耀8青春版', 'Linux', 'iPhone', 'Google爬虫','Baidu爬虫']
+	index = -1
+	for d in konwns_rel_devices:
+		index+=1
+		if d in device:
+			device = konwns_devices[index]
+			break
 	return device
 
 def support_at(content):
@@ -64,7 +72,7 @@ def from_topic_notify_user(content, title, id, conn):
 		if user == session['ol_user']['name']:
 			continue
 		uid = conn.execute("select id from user where name='%s'" % user).first()[0]
-		conn.execute("insert into message(content, from_id, to_id) values('[%(user)s](/profile/%(user)s)在主题[%(title)s](/t/%(id)d)中提到了你.', 1, %(uid)d)" % {'user':user, 'title':title, 'id':id, 'uid':uid})
+		conn.execute("insert into message(content, from_id, to_id) values('[%(user)s](/profile/%(user)s)在发布主题[%(title)s](/t/%(id)d)时提到了你.', 1, %(uid)d)" % {'user':session['ol_user']['name'], 'title':title, 'id':id, 'uid':uid})
 
 def from_answer_notify_user(content, title, id, conn):
 	users = re.findall('@[^ @\r\n\t,]+ ', content)
@@ -74,9 +82,9 @@ def from_answer_notify_user(content, title, id, conn):
 		if user == session['ol_user']['name']:
 			continue
 		uid = conn.execute("select id from user where name='%s'" % user).first()[0]
-		conn.execute("insert into message(content, from_id, to_id) values('[%(user)s](/profile/%(user)s)在主题[%(title)s](/t/%(id)d)的答案中提到了你.', 1, %(uid)d)" % {'user':user, 'title':title, 'id':id, 'uid':uid})
+		conn.execute("insert into message(content, from_id, to_id) values('[%(user)s](/profile/%(user)s)在主题[%(title)s](/t/%(id)d)的答案中提到了你.', 1, %(uid)d)" % {'user':session['ol_user']['name'], 'title':title, 'id':id, 'uid':uid})
 
-def update_online_users(session, app, request):
+def update_online_users(session, app, request, username = None):
 	online_usernames = app.online_usernames
 	online_users = app.online_users
 	online_user_updates_queue = app.online_user_updates_queue
@@ -88,9 +96,11 @@ def update_online_users(session, app, request):
 	if 'ol_user' in session:
 		username = session['ol_user']['name']
 	else:
-		username = request.cookies.get(app.session_cookie_name)
+		if not username:
+			username = request.cookies.get(app.session_cookie_name)
 		if username:
 			username = hashlib.md5(username.encode('utf-8')).hexdigest()
+			username = username + ' • ' + get_post_device(request.headers.get('User_Agent')) + '用户'
 	if username not in online_usernames:
 		online_usernames.append(username)
 		online_users.append(create_user(username, datetime.datetime.now()))

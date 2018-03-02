@@ -3,7 +3,8 @@
 {{super()}}
 <title>WITALK - 智慧·讨论</title>
 <style type="text/css">
-	.index-nav {padding: 10px 4px 12px 4px;border-bottom: 1px solid #e7e7e7;line-height: 14px;}
+	.index-nav {padding: 8px 4px 8px 4px;border-bottom: 1px solid #AAB0C6;line-height: 14px;}
+	.index-nav .forums {float: right;margin-top: -2px;padding:2px;height: 22px;width: 22px;}
 	.index-nav a {display: inline-block;padding: 6px 4px;color: #444;border-radius: 2px;margin: 0 2px;}
 	.index-nav a:hover {background: #feeeee;}
 	.index-nav .nd-focus {background: #07111B;color: #fcfcfc;}
@@ -14,23 +15,31 @@
 	.switch button:last-child {border-radius: 0 9px 9px 0;}
 	.switch .selected {}
 	.list {}
-	.list li {border-bottom: 1px solid #eee;padding: 8px 10px;}
+	.list li {border-bottom: 1px solid #eee;padding: 8px 10px;line-height: 20px;}
 	.list li:last-child {border-bottom: none;}
 	.list li .avatar {float: left;padding: 2px;width: 22px;height: 22px;margin-top: -2px;}
 	.list li .avatar img {border-radius: 2px;}
 	.list li .topic {margin-left: 32px;color: #444;font-size: 16px;}
 	.list li .topic:hover {text-decoration: underline;color: #000;}
 	.list li .topic-info {margin: 0 0 10px 32px;color: #888;font-size: 12px;}
-	.list li .answer_count {float: right;display: inline-block;background: #AAB0C6;color: #f0f0f0;font-weight: bold;height: 16px;line-height: 16px;padding: 0px 8px;border-radius: 8px;margin: 5px 5px 0 0;}
-	.list li .answer_count:hover {background: #778087;}
+	.list li .answer_count {float: right;display: inline-block;background: #efefef;color: #454545;font-weight: bold;height: 14px;line-height: 14px;padding: 0px 6px;border-radius: 7px;margin: 2px 5px 0 0;font-size: 12px;}
+	.list li .answer_count:hover {background: #ccc;}
 	.list li .last_answer_info {margin-left: 32px;color: #888;font-size: 12px;margin-top: 10px;}
-	.list li .forum {display: inline-block;padding: 2px 6px;background: #feeeee;border-radius: 3px;color: #787878;}
+	.list li .forum {display: inline-block;padding: 0 5px;background: #feeeee;border-radius: 2px;color: #787878;}
 	.list li .forum:hover {background: #ceeeee;color: #222;}
+	.tip {padding: 10px;border-top: 1px solid #efefef;text-align: right;display: none;}
+	.title {font-weight: bold;color: #c8c8c8;border-bottom: 1px solid #efefef;padding: 10px;}
+	.cate, .nd_list {display: inline-block;float: left;line-height: 32px;}
+	.cate {width: 18%;color: #bcbcbc;text-align: right;}
+	.sp {height: 10px;background: #fff;clear: both;}
+	.nd_list {width: 80%;}
+	.nd_list a {margin-left: 12px;color: #787878;display: inline-block;line-height: 16px;height: 16px;}
+	.nd_list a:hover {text-decoration: underline;}
 </style>
 {% endblock %}{% block body %}
 	<div class="index-nav">
+		<a class="forums" href="/forums"><img src="https://witalk.cc/r/witalk/rightarrow.png" height="22" /></a>
 		<a href="/f/1">问与答</a>
-		<a href="/forums">论坛</a>
 		<a {{all_focus|safe}} href="/">全部</a>
 		<a {{programming_focus|safe}} href="/programming">编程</a>
 		<a {{art_focus|safe}} href="/art">文艺</a>
@@ -39,7 +48,69 @@
 	</div>
 	<div class="switch"><button id="default-btn">默认</button><button id="new-btn">最新</button></div>
 	<div id="list" class="list"></div>
-	<div class="list"><li><a id="get-more" style="text-align: right;" href="javascript:;">数据加载中...</a></li></div>
+	<div class="list"><li><a id="get-more" href="javascript:;">数据加载中...</a></li></div>
+	<div id="tip" class="tip"><a href="#top">按最新排序查看更多主题↑</a></div>
+	<div class="line"></div>
+	<div class="cate">信息工程</div>
+	<div class="nd_list">
+		<a href="/f/2">程序员</a>
+		<a href="/f/3">Java</a>
+		<a href="/f/4">Python</a>
+		<a href="/f/5">C/C++</a>
+		<a href="/f/6">Golang</a>
+		<a href="/f/7">Lisp</a>
+		<a href="/f/30">PHP</a>
+		<a href="/f/9">Perl</a>
+		<a href="/f/8">C#</a>
+		<a href="/f/10">Javascript</a>
+		<a href="/f/24">HTML5</a>
+	<!-- </div>
+	<div class="sp"></div>
+	<div class="cate">技术框架</div>
+	<div class="list"> -->
+		<a href="/f/23">MVC</a>
+		<a href="/f/17">Spring</a>
+		<a href="/f/18">Struts2</a>
+		<a href="/f/19">Mybatis</a>
+		<a href="/f/20">Hibernate</a>
+		<a href="/f/21">Flask</a>
+		<a href="/f/35">WITALK</a>
+		<a href="/f/22">Node.js</a>
+		<a href="/f/13">网络</a>
+		<a href="/f/31">Gradle</a>
+		<a href="/f/32">Maven</a>
+		<a href="/f/39">Android</a>
+		<a href="/f/40">Apple</a>
+		<a href="/f/41">Google</a>
+	<!-- </div>
+	<div class="sp"></div>
+	<div class="cate">架构师</div>
+	<div class="list"> -->
+		<a href="/f/11">Linux</a>
+		<a href="/f/12">分布式</a>
+		<a href="/f/25">区块链</a>
+		<a href="/f/28">大数据</a>
+		<a href="/f/26">MySQL</a>
+		<a href="/f/27">Redis</a>
+		<a href="/f/29">心理学</a>
+	</div>
+	<div class="sp"></div>
+	<div class="cate">生活</div>
+	<div class="nd_list">
+		<a href="/f/14">二手市场</a>
+		<a href="/f/15">网购信息</a>
+		<a href="/f/33">电影</a>
+		<a href="/f/34">音乐</a>
+		<a href="/f/36">面试</a>
+		<a href="/f/38">读书</a>
+		<a href="/f/37">脑洞时刻</a>
+	</div>
+	<div class="sp"></div>
+	<div class="cate">其它</div>
+	<div class="nd_list">
+		<a href="/f/1">问与答</a>
+		<a href="/f/16">杂谈</a>
+	</div>
 {% endblock %}
 {% block script %}
 <script type="text/javascript">
@@ -56,6 +127,7 @@
 
 	var list = document.getElementById('list');
 	var get_more = document.getElementById('get-more');
+	var tip = document.getElementById('tip');
 	var pageid = 1;
 	var req_url = ''
 	var default_btn = document.getElementById('default-btn')
@@ -68,6 +140,7 @@
 	}
 	default_btn.onclick = function(){
 		request_init();
+		tip.style.display = 'block';
 		this.style.cssText = 'color: #222;font-weight: bold;';
 		new_btn.style.cssText = '';
 		req_url = '/rtopics/{{quickindex}}';
@@ -91,6 +164,7 @@
 	}
 	new_btn.onclick = function(){
 		request_init();
+		tip.style.display = 'none';
 		this.style.cssText = 'color: #222;font-weight: bold;';
 		default_btn.style.cssText = '';
 		req_url = '/topics/0/' + (pageid++);
@@ -107,7 +181,10 @@
 				list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="22" /></a><div class="topic-info"><a class="forum" href="/f/'+ topic.forum.id +'">'+ topic.forum.name +'</a> · <a class="username" href="/profile/'+ topic.author.id+'">'+ topic.author.name +'</a> · '+ topic.post_date +'前 · '+ topic.answer_count +'回复</div><a class="topic" href="/t/' + topic.id + '">' + topic.title + '</a></li>\n';
 				count++;
 			}
-			if(count < 12) get_more.style.display = 'none';
+			if(count < 12) {
+				//get_more.style.display = 'none';
+				get_more.innerHTML = '没有了';
+			}
 			else get_more.innerHTML = '还有，继续浏览';
 		});
 		get_more.onclick = function(){

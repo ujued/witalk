@@ -1,6 +1,6 @@
 import hashlib
 from flask import Blueprint, current_app, request, render_template, session, redirect, flash
-from tools import filter_sql, update_online_users
+from tools import filter_sql
 
 bp = Blueprint('passport', __name__)
 
@@ -22,7 +22,6 @@ def create_user_dict(row):
 @bp.route('/login', methods = ['GET', 'POST'])
 def  login():
 	if request.method == 'GET':
-		update_online_users(session, current_app, request)
 		return render_template('login.html')
 	id = request.form['id']
 	password = request.form['password']
@@ -52,7 +51,6 @@ def  login():
 @bp.route('/register', methods = ['POST', 'GET'])
 def register():
 	if request.method == 'GET':
-		update_online_users(session, current_app, request)
 		return render_template('register.html')
 	username = request.form['username']
 	password = request.form['password']
@@ -86,7 +84,6 @@ def register():
 
 @bp.route('/profile/<int:id>')
 def profile(id):
-	update_online_users(session, current_app, request)
 	conn = current_app.mysql_engine.connect()
 	user_row = conn.execute('select id, name, gender, age, email, register_date, avatar, points,signature, my_page, github_name, location from user where id=%d' % id).first()
 	if user_row == None:
@@ -102,7 +99,6 @@ def profile(id):
 
 @bp.route('/profile/<username>')
 def profile_name(username):
-	update_online_users(session, current_app, request)
 	import urllib
 	username = urllib.parse.unquote(username)
 	if "'" in username:
@@ -122,7 +118,6 @@ def profile_name(username):
 
 @bp.route('/home')
 def home():
-	update_online_users(session, current_app, request)
 	if 'ol_user' not in session :
 		return redirect('/login')
 	conn = current_app.mysql_engine.connect()

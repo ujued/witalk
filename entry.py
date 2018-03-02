@@ -4,9 +4,9 @@ from flup.server.fcgi import WSGIServer
 from queue import Queue
 from threading import Thread
 from config import configuration as conf
-from flask import Flask, session
+from flask import Flask, session, request
 from sqlalchemy import create_engine
-from tools import get_date_fashion, get_post_device, support_at, update_online_users, create_recent_topic_item
+from tools import get_date_fashion, get_post_device, support_at, update_online_users, create_recent_topic_item, update_online_users
 from witalk import create_topic_item
 
 engine = create_engine('mysql+pymysql://%(mysql_user)s:%(mysql_pass)s@127.0.0.1/%(mysql_db)s?charset=utf8' % conf)
@@ -17,7 +17,8 @@ def create_app():
     return app
 
 app = create_app()
-app.secret_key = os.urandom(24)
+app.secret_key = '\x90m\x12\x98\x0b\xf4\xb8\x17m\x9eJK\x9aB`\xfe=\xe0\x99\x81S\xda-g'
+app.permanent = True
 
 # about online user
 online_usernames = []
@@ -105,6 +106,16 @@ app.register_blueprint(passport_bp)
 app.register_blueprint(nav_bp)
 app.register_blueprint(message_bp)
 app.register_blueprint(collections_bp)
+
+@app.after_request
+def ensure_session(resp):
+	if request.cookies.get(app.session_cookie_name) is None:
+		username = str(os.urandom(32))
+		resp.set_cookie(app.session_cookie_name, value = username)
+		update_online_users(session, app, request, username)		
+	else:
+		update_online_users(session, app, request)
+	return resp
 
 @app.template_global('msgcount')
 def msgcount():

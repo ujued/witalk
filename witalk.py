@@ -1,18 +1,16 @@
 import json
 from flask import Blueprint, current_app, request, render_template, session, redirect
 from tools import filter_sql, page_turning_info, get_date_fashion, get_post_device, support_at
-from tools import update_online_users, create_recent_topic_item, from_answer_notify_user, from_topic_notify_user
+from tools import create_recent_topic_item, from_answer_notify_user, from_topic_notify_user
 
 bp = Blueprint('wit', __name__)
 
 @bp.route('/')
 def index():
-	update_online_users(session, current_app, request)
 	return render_template('index.html', all_focus="class='nd-focus'",lang_focus='',archer_focus='',qa_focus='',trade_focus='', quickindex = 'all')
 
 @bp.route('/<node_name>')
 def index__(node_name):
-	update_online_users(session, current_app, request)
 	all_focus = None
 	programming_focus = None
 	art_focus = None
@@ -31,11 +29,6 @@ def index__(node_name):
 	else:
 		return render_template('404.html')
 	return render_template('index.html', all_focus=all_focus,programming_focus=programming_focus,art_focus=art_focus,hot_focus=hot_focus,trade_focus=trade_focus, quickindex = node_name)
-
-@bp.route('/forums')
-def forums():
-	update_online_users(session, current_app, request)
-	return render_template('forums.html')
 
 @bp.route('/new/<int:id>', methods = ['GET', 'POST'])
 def post(id):
@@ -149,7 +142,6 @@ def reply(id):
 
 @bp.route('/f/<int:id>')
 def list(id):
-	update_online_users(session, current_app, request)
 	conn = current_app.mysql_engine.connect()
 	forum = conn.execute('select * from forum where id=%d' % id).first()
 	topic_count = conn.execute('select count(id) from topic where forum_id=%d' % id).first()[0]
@@ -262,7 +254,6 @@ def mytopics(uid, pid):
 
 @bp.route('/t/<int:id>')
 def view(id):
-	update_online_users(session, current_app, request)
 	conn = current_app.mysql_engine.connect()
 	topic = conn.execute('select * from topic where id=%d' % id).first()
 	if topic is None:
