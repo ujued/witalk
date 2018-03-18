@@ -1,4 +1,4 @@
-{% extends 'template.html' %}
+{% extends 'pc/template.html' %}
 {% block head %}{{super()}}
 	<title>{{forum.name}}</title>
 	<style type="text/css">
@@ -6,17 +6,16 @@
 		.forum-info span:nth-child(1), .forum-info span:nth-child(2) {font-size: 10px;color: #aaa;}
 		.forum-info span:nth-child(3) {color: #888;font-size: 12px;}
 		.avatar {float: left;display: inline-block;width: 22px;height: 22px;padding: 2px;}
-		.avatar img {border-radius: 2px;}		
+		.avatar img {border-radius: 3px;}		
 		.post {display: block;border: 1px solid #cbcbcb;box-shadow: 0 0 2px #efefef inset;margin:5px 10px;height: 26px;line-height: 26px;text-align: center;color: #343434;}
-		.remark {background:#efefef;padding: 6px 10px;margin: 0px;line-height: 22px;font-size: 12px;color: #454545;}
 		.list {margin:0 10px;}
-		.list li {border-bottom: 1px solid #eee;padding: 8px 0;}
+		.list li {border-bottom: 1px solid #eee;padding: 10px 0;}
 		.list li:last-child {border-bottom: none;}
-		.list li .topic {margin-left: 6px;color: #444;}
-		.list li .topic:hover {text-decoration: underline;color: #000;}
-		.list li .answer_count {float: right;display: inline-block;background: #efefef;color: #454545;font-weight: bold;height: 14px;line-height: 14px;padding: 0px 6px;border-radius: 7px;margin: 2px 5px 0 0;font-size: 12px;}
+		.list li .answer_count {float: right;display: inline-block;background: #efefef;color: #454545;font-weight: bold;height: 16px;line-height: 16px;padding: 0px 8px;border-radius: 9px;margin: 2px 0px 0 0;font-size: 14px;}
 		.list li .answer_count:hover {background: #ccc;}
-		.list li .topic-info {margin: 5px 0 0 32px;color: #888;font-size: 12px;}
+		.list li .topic {margin-left: 28px;color: #444;}
+		.list li .topic:hover {text-decoration: underline;color: #000;}
+		.list li .topic-info {margin: -6px 0 0 54px;color: #888;font-size: 12px;}
 		.list li .topic-info .answer-count {float: right;}
 	</style>
 {% endblock %}
@@ -35,9 +34,7 @@
 			{%endif%}
 			<span>主题</span>&nbsp;<span>{{topic_count}}</span></div>
 	</div>
-	
-	{%if forum.remark%}<div class="remark">{{forum.remark}}</div>{%endif%}
-	{% if session.ol_user %}<a class="post" href="/new/{{forum.id}}">创建新主题</a>{%else%}<a class="post" href="/login?back=/new/{{forum.id}}">登录并创建新主题</a>{% endif%}
+	{% if session.ol_user%}<a class="post" href="/new/{{forum.id}}">创建新主题</a>{% endif%}
 	<div id="list" class="list"></div>
 	<div class="list"><li><a id="get-more" style="text-align: right;" href="javascript:;">数据加载中...</a></li></div>
 {%endblock%}
@@ -66,7 +63,7 @@
 		count = 0;
 		for(posi in topics){
 			topic = topics[posi];
-			list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="22" /></a><a class="topic" href="/t/' + topic.id + '">' + topic.title + '</a><a class="answer_count" href="/t/'+ topic.id +'">'+ topic.answer_count +'</a><div class="topic-info"><a style="font-weight: bold;" href="/profile/'+ topic.author.id +'">'+ topic.author.name +'</a> · '+ topic.post_date +'前 · '+ topic.view_count +' 次点击</div></li>\n';
+			list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="44" /></a><a class="topic" href="/t/' + topic.id + '">' + topic.title + '</a><a class="answer_count" href="/t/'+ topic.id +'">'+ topic.answer_count +'</a><div class="topic-info"><a class="username" href="/profile/'+ topic.author.id +'">'+ topic.author.name +'</a> · '+ topic.post_date +'前 · '+ topic.view_count +' 次点击</span></div></li>\n';
 			count++;
 		}
 		if(count < 12) get_more.style.display = 'none';
@@ -84,7 +81,7 @@
 			count = 0
 			for(posi in topics){
 				topic = topics[posi]
-				list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="22" /></a><a class="topic" href="/t/' + topic.id + '">' + topic.title + '</a><div class="topic-info"><span style="font-weight: bold;">'+ topic.author.name +'</span> · '+ topic.post_date +'前<span class="answer-count">'+ topic.answer_count +'回复</span></div></li>\n';
+				list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="44" /></a><a class="topic" href="/t/' + topic.id + '">' + topic.title + '</a><a class="answer_count" href="/t/'+ topic.id +'">'+ topic.answer_count +'</a><div class="topic-info"><a class="username" href="/profile/'+ topic.author.id +'">'+ topic.author.name +'</a> · '+ topic.post_date +'前 · '+ topic.view_count +' 次点击</span></div></li>\n';
 				count++;
 			}
 			if(count < 12) get_more.innerHTML = '没有了';

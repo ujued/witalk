@@ -1,0 +1,28 @@
+{%extends 'template.html'%}
+{%block head%}{{super()}}
+	<title>追加主题</title>
+	<style type="text/css">
+		.content {margin: 0 10px 5px 10px;line-height: 26px;color: #565656;}
+		form .input-1 {border: 1px solid #cbcbcb;padding: 5px;width: 100%;margin-left: -5px;}
+		form textarea {width: 100%;max-width: 100%;display: block;padding: 5px;border-radius: 2px;margin-left: -5px;border: 1px solid #cbcbcb;}
+		form textarea:focus {border-color: #bbb;box-shadow: 0 0 3px #cecece;}
+		.btn-1 {border: 1px solid #cbcbcb;border-radius: 2px;background: #fff;padding: 3px 15px;box-shadow: 0 0 2px #efefef inset;float: right;margin: 8px -6px 6px 0;} 
+		.btn-1:focus {border-color: #bbb;box-shadow: 0 0 6px #cecece inset;}
+		form {padding: 2px 15px;margin: 0px;}
+		form input {margin: 5px 0;}
+		form .tip {color:red;text-shadow:0 0 1px #ccc;line-height:32px;margin-left:-5px;}
+		.tips {margin: 0 10px;line-height: 24px;padding: 10px 0 10px 0;}
+	</style>
+{%endblock%}{%block body%}
+	<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/forums">分类</a>&nbsp;&nbsp;›&nbsp;&nbsp;追加主题</div>
+	<div style="margin: 5px 10px 10px 10px;">主题: <a href="/t/{{topic.id}}">{{topic.title}}</a></div>
+	<form method="post">
+		<textarea class="text-1" rows="10" placeholder="追加内容不得少于6字" name="content" required="required">{{content}}</textarea>
+		<input class="btn-1" type="submit" value="立即追加" />
+	</form>
+	<div class="line"></div>
+	<div class="tips">
+		. 支持Markdown语法<br />
+		. 可能会被保持原意的、版面有删改的归档在<a href="https://uoope.com">UOOPE技术栈</a>
+	</div>
+{%endblock%}

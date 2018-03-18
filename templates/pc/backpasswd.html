@@ -1,6 +1,6 @@
-{%extends 'template.html'%}
+{%extends 'pc/template.html'%}
 {%block head%}{{super()}}
-	<title>登录</title>
+	<title>找回密码</title>
 	<style type="text/css">
 		form{margin: 0 15px;margin-bottom: 60px;}
 		form .input-1 {border: 1px solid #cbcbcb;padding: 5px;width: 100%;margin-left: -5px;}
@@ -15,18 +15,16 @@
 		.links a {display: block;border: 1px solid #cbcbcb;box-shadow: 0 0 2px #efefef inset;margin:5px 10px;height: 26px;line-height: 26px;text-align: center;color: #343434;}
 	</style>
 {%endblock%}{%block body%}
-	<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;登录</div>
+	<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;密码找回</div>
 	<form method="post">
 		<p class="tip">{{message}}</p>
-		<span class="light">帐号:</span>
-		<input class="input-1" type="text" name="id" required="required" placeholder="ID / 常用网名 / Email" />
-		<span class="light">密码:</span>
-		<input class="input-1" type="password" name="password" required="required" placeholder="不少于6位" />
-		<input class="btn-1" type="submit" value="立即登录" />
+		<span class="light">Email:</span>
+		<input class="input-1" type="email" name="email" required="required" placeholder="注册时使用的Email" />
+		<input class="btn-1" type="submit" value="立即找回" />
 	</form>
 	<div class="line"></div>
 	<div class="links">
-		<a href="backpasswd">忘记密码</a>
+		<a href="login">去登陆</a>
 		<a href="register">注册新账号</a>
 	</div>
 {%endblock%}

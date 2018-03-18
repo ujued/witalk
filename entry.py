@@ -4,7 +4,7 @@ from flup.server.fcgi import WSGIServer
 from queue import Queue
 from threading import Thread
 from config import configuration as conf
-from flask import Flask, session, request
+from flask import Flask, session, request, g
 from sqlalchemy import create_engine
 from tools import get_date_fashion, get_post_device, support_at, update_online_users, create_recent_topic_item, update_online_users
 from witalk import create_topic_item
@@ -27,7 +27,6 @@ online_user_updates_queue = Queue()
 app.online_usernames = online_usernames
 app.online_users = online_users
 app.online_user_updates_queue = online_user_updates_queue
-
 def update_oluser_date():
 	while True:
 		name = online_user_updates_queue.get()
@@ -37,6 +36,10 @@ def update_oluser_date():
 def update_online_user():
 	while True:
 		time.sleep(300)
+		max_online_count = r.get('max_online_count');
+		now_count = len(online_users)
+		if not max_online_count or int(max_online_count) < now_count:
+			r.set('max_online_count', now_count)
 		for user in online_users:
 			if (datetime.datetime.now() - user['last_time']).seconds > 180:
 				online_users.remove(user)
@@ -46,6 +49,12 @@ Thread(target=update_online_user).start()
 @app.template_global('onlines')
 def onlines():
 	return online_users
+@app.template_global('max_online_count')
+def max_online_count():
+	max_online_count = r.get('max_online_count')
+	if not max_online_count:
+		max_online_count = 1
+	return int(max_online_count)
 
 # abount recent topics
 programming_forum_ids = '2,3,4,5,6,7,8,9,10,11,12,13,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,35,39,40,41'
@@ -107,14 +116,26 @@ app.register_blueprint(nav_bp)
 app.register_blueprint(message_bp)
 app.register_blueprint(collections_bp)
 
+@app.before_request
+def update_onlines():
+	if request.cookies.get(app.session_cookie_name) is None:
+		request.username = str(os.urandom(32))
+		update_online_users(session, app, request, request.username)
+	else:
+		update_online_users(session, app, request)
+
+	mobile_list = ['Android', 'iPhone']
+	for mobile in mobile_list:
+		if mobile in request.headers.get('User-Agent'):
+			g.tperfix = ''
+			break
+	if not hasattr(g, 'tperfix'):
+		g.tperfix = 'pc/'
+
 @app.after_request
 def ensure_session(resp):
 	if request.cookies.get(app.session_cookie_name) is None:
-		username = str(os.urandom(32))
-		resp.set_cookie(app.session_cookie_name, value = username)
-		update_online_users(session, app, request, username)		
-	else:
-		update_online_users(session, app, request)
+		resp.set_cookie(app.session_cookie_name, value = request.username)
 	return resp
 
 @app.template_global('msgcount')
@@ -126,7 +147,7 @@ def msgcount():
 	else:
 		count = -1
 	return count
-app.run()
+app.run(host='0.0.0.0')
 
 # if __name__ == '__main__':
 # 	WSGIServer(app).run()

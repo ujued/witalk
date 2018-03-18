@@ -1,0 +1,45 @@
+{%extends 'template.html'%}
+{%block head%}{{super()}}
+<title>图片上传</title>
+<style type="text/css">
+	form .input-1 {border: 1px solid #cbcbcb;padding: 5px;width: 100%;margin-left: -5px;}
+	form textarea {width: 100%;max-width: 100%;display: block;padding: 5px;border-radius: 2px;margin-left: -5px;border: 1px solid #cbcbcb;}
+	form textarea:focus {border-color: #bbb;box-shadow: 0 0 3px #cecece;}
+	.btn-1 {border: 1px solid #cbcbcb;border-radius: 2px;background: #fff;padding: 3px 15px;box-shadow: 0 0 2px #efefef inset;float: right;margin: 8px -6px 6px 0;} 
+	.btn-1:focus {border-color: #bbb;box-shadow: 0 0 6px #cecece inset;}
+	form {padding: 2px 15px;margin: 0px;}
+	form input {margin: 5px 0;}
+	form .tip {color:red;text-shadow:0 0 1px #ccc;line-height:32px;margin-left:-3px;}
+</style>
+{%endblock%}{%block body%}
+<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/home">个人中心</a>&nbsp;&nbsp;›&nbsp;&nbsp;图片上传</div>
+<form class="upload" action="/upload" method="post" enctype="multipart/form-data">
+	{%if filename %}
+	<div class="tip">上传成功!</div>
+	你的图片地址：
+	<input class="input-1" type="text" value="https://witalk.cc/img/{{filename}}" />
+	Markdown:
+	<input class="input-1" type="text" value="![{{filename}}](https://witalk.cc/img/{{filename}})" /><br /><br />
+	{%endif%}
+	<input id="image" class="input-1" accept="image/*" type="file" name="image" />
+	<input id="upload-btn" class="btn-1" type="submit" value="立即上传" />
+	<p style="margin: 10px 0 0 -5px;">图片分享请用Markdown.</p>
+</form>
+<div style="clear: both;height: 24px;"></div>
+<script type="text/javascript">
+	image = document.getElementById('image');
+	upload_btn  = document.getElementById('upload-btn');
+	image.onchange = function(){
+		size = 0
+		try{
+			size = image.files[0].size;
+		}catch(e){}
+		if (size > 4096000){
+			alert('上传图片不得大于4MB');
+			upload_btn.style.display = 'none';
+		}else{
+			upload_btn.style.display = 'block';
+		}
+	}
+</script>
+{%endblock%}

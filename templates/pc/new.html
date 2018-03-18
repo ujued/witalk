@@ -1,8 +1,7 @@
-{%extends 'template.html'%}
+{%extends 'pc/template.html'%}
 {%block head%}{{super()}}
 	<title>创建新主题-{{forum.name}}</title>
 	<style type="text/css">
-		.content {margin: 0 10px 5px 10px;line-height: 26px;color: #232323;}
 		form .input-1 {border: 1px solid #cbcbcb;padding: 5px;width: 100%;margin-left: -5px;}
 		form textarea {width: 100%;max-width: 100%;display: block;padding: 5px;border-radius: 2px;margin-left: -5px;border: 1px solid #cbcbcb;}
 		form textarea:focus {border-color: #bbb;box-shadow: 0 0 3px #cecece;}
@@ -11,9 +10,16 @@
 		form {padding: 2px 15px;margin: 0px;}
 		form input {margin: 5px 0;}
 		form .tip {color:red;text-shadow:0 0 1px #ccc;line-height:32px;margin-left:-5px;}
-		.tips {margin: 0px;padding: 3px 10px;line-height: 22px;color: #454545;font-size: 12px;background: #efefef;}
-		.tips a {text-decoration: underline;}
+		.tips {padding: 10px;line-height: 26px;}
+		.content {margin: 0 10px 5px 10px;line-height: 26px;color: #565656;}
 	</style>
+{%endblock%}{%block right%}
+<div class="n_title">WITALK提示</div>
+<div class="n_content">
+	你发布的主题会优先展示在首页 "全部" 类别下，社区帖子默认按回复和发布时间综合排序，新发布和新回复的帖子均会排在各类前面。<br />
+	首页展示四个大类：编程、文艺、热议、交易，和一个综合类：全部。<br />
+	社区共同看重质量与信息量，希望发布的主题、答案等都会围绕这两点，当然这是需要智慧和技巧的。<br />我们在一起，未来一定是程序员的。
+</div>
 {%endblock%}{%block body%}
 	<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/forums">分类</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/f/{{forum.id}}">{{forum.name}}</a>&nbsp;&nbsp;›&nbsp;&nbsp;主题创建</div>
 	{%if forum.id == 1%}
@@ -22,19 +28,13 @@
 	<form method="post">
 		<div class="tip">{{message}}</div>
 		<input class="input-1" type="text" required="required" name="title" value="{{param.title}}" placeholder="标题" />
-		<textarea class="text-1" rows="12" placeholder="主题内容" name="content">{{param.content}}</textarea>
-		<p style="margin: 10px 0 0 -5px;width: 72px;display: inline-block;"><a href="/upload">上传图片</a></p>
+		<textarea class="text-1" rows="16" placeholder="主题内容" name="content">{{param.content}}</textarea>
 		<input class="btn-1" type="submit" value="立即创建" />
 	</form>
 	<div class="line"></div>
 	<div class="tips">
-		支持Markdown语法<br />
-		标题能描述清楚的主题，内容请留空，不要加上RT、如题等类词语<br />
-		可能会被保持原意的、版面有删改的归档<a href="https://uoope.com">UOOPE技术栈</a>
-	</div>
-	<div class="content">
-		你发布的主题会优先展示在首页 "全部" 类别下，社区帖子默认按回复和发布时间综合排序，新发布和新回复的帖子均会排在各类前面。<br />
-		首页展示四个大类：编程、文艺、热议、交易，和一个综合类：全部。<br />
-		社区共同看重质量与信息量，希望发布的主题、答案等都会围绕这两点，当然这是需要智慧和技巧的。<br />我们在一起，未来一定是程序员的。
+		. 支持Markdown语法<br />
+		. 标题能描述清楚的主题，内容请留空，不要加上RT、如题等类词语<br />
+		. 可能会被有删改的发布在<a href="https://uoope.com">UOOPE技术栈</a>
 	</div>
 {%endblock%}

@@ -1,0 +1,18 @@
+{%extends 'pc/template.html'%}
+{%block head%}{{super()}}
+<title>我的图库</title>
+<style type="text/css">
+	.list {margin: 0 10px;}
+	.list li {padding: 10px 0;}
+</style>
+{%endblock%}{%block body%}
+<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/home">个人中心</a>&nbsp;&nbsp;›&nbsp;&nbsp;我的图库 - <a href="/upload">Upload</a><br />(按最新上传排序)</div>
+<div class="list">
+{%if not pictures%}
+<li><a href="javascript:;">暂无图片</a></li>
+{%endif%}
+{%for picture in pictures%}
+	<li><a href="/img/{{picture.name}}">https://witalk.cc/img/{{picture.name}}</a></li>
+{%endfor%}
+</div>
+{%endblock%}

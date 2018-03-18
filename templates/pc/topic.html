@@ -1,4 +1,4 @@
-{%extends 'template.html'%}
+{%extends 'pc/template.html'%}
 {%block head%}{{super()}}
 <meta name="keywords" content="{{forum.name}}" />
 <meta name="description" content="{{topic.title}}" />
@@ -10,25 +10,22 @@
 		.info {font-size: 12px;color: #999;padding: 2px 0 5px 0px;margin: 0 10px;}
 		.content {padding: 8px 0;margin: 0 10px;line-height: 30px;color: #222;border-top: 1px solid #efefef;}
 		.content a {color: #787878;font-weight: bold;}
-		.content img {max-width: 100%;}
 		.appends {margin: 0 10px;}
-		.appends li {margin-bottom: 5px;background: #fff;border-radius: 1px;border-top: 1px solid #efefef;}
-		/*.appends li:last-child {border-bottom: none;}*/
-		.appends t {height: 16px;line-height: 16px;font-size: 12px;color: #ccc;display: block;text-align: right;padding-right: 2px;margin-top:-3px;}
-		.appends p {line-height: 18px;font-size: 12px;color: #454545;padding: 2px;}
-		.operate-area {text-align: right;padding: 6px 0px;margin: 0 10px;border-top: 1px solid #efefef;}
+		.appends li {margin-bottom: 5px;border-radius: 2px;border-top: 1px solid #efefef;}
+		.appends t {height: 16px;line-height: 16px;font-size: 12px;color: #787878;display: block;text-align: right;padding-right: 2px;margin-top: -5px;}
+		.appends p {line-height: 18px;font-size: 12px;color: #454545;padding: 3px 5px;}
+		.operate-area {text-align: right;padding: 6px 10px;border-top: 1px solid #efefef;}
 		.operate-area span {font-size: 10px;color: #ccc;}
 		.operate-area a {display: inline-block;height: 16px;line-height: 16px;padding: 2px 5px;color: #787878;border: 1px solid #e0e0e0;background: #efefef;border-radius: 2px;margin-left: 8px;font-size: 12px;}
 		.operate-area a:hover {box-shadow: 0 0 8px #e0e0e0 inset;}
 		.ans-tit {padding: 3px 0;margin: 10px;border-bottom: 1px solid #e2e2e2;color: #676767;font-size: 12px;}
 		.answer, .list {margin: 0 10px;}
 		.list {margin-bottom: 5px;}
-		.answer li {border-bottom: 1px solid #efefef;padding: 8px 0;margin: 5px 0;}
+		.answer li {border-bottom: 1px solid #efefef;padding: 5px 0;margin: 5px 0;}
 		.answer li:last-child {border-bottom: none;}
 		.answer li .avatar {float: left;width: 22px;height: 22px;border-radius: 3px;}
 		.answer li .u {margin-left: 30px;margin-top: -2px;height: 26px;font-size: 12px;color: #bcbcbc;}
-		.answer li .c {margin-left: 30px;font-size: 14px;margin-top: -5px;}
-		.answer li .c img {max-width: 100%;}
+		.answer li .c {margin-left: 30px;font-size: 14px;}
 		.answer li .c a {color: #787878;font-weight: bold;font-size: 12px;}
 		.answer li .floor {float: right;color: #bcbcbc;font-size: 12px;font-style: italic;}
 		.answer li .floor .answer-reply {height: 14px;padding:1px 2px;margin:-1px 5px 0 0;float: left;}
@@ -118,15 +115,12 @@
 		display: block;
 		word-wrap:break-word;
 		font-family: Monaco, Andale Mono, Courier New, monospace;
-		white-space: normal;  
-		word-break: break-all; 
 	}
 	code {
-	    background-color: rgba(0,0,0,0.04);
+	     background-color: rgba(0,0,0,0.04);
 	    color: rgba(0, 0, 0, 0.75);
 	    padding: 1px 3px;
 	    font-size: 12px;
-	    line-height: 22px;
 	    -webkit-border-radius: 3px;
 	    -moz-border-radius: 3px;
 	    border-radius: 3px;

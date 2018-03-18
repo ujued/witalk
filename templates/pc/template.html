@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+<head>
+	{% block head %}
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=2.0" />
+	<link rel="shortcut icon" href="https://witalk.cc/r/witalk/favicon.ico" />
+	<link rel="bookmark" href="https://witalk.cc/r/witalk/favicon.ico" />
+	<style type="text/css">
+		* {padding: 0;margin: 0;list-style: none;}
+		body {font-size: 14px;font-family: "Raleway","Microsoft Jhenghei","Microsoft Yahei","Helvetica Neue",HelveticaNeue,Arial,sans-serif;line-height: 28px;}
+		a {text-decoration: none;color: #787878;}
+		.username {font-weight: bold;color: #787878;margin: 0 3px;}
+		.nav {margin: 10px;line-height: 18px;}
+		.nav a {color: #888;}
+		.nav a:hover {color: #666;text-decoration: underline;}
+		.header {height: 22px;padding: 10px 0;border-bottom: 1px solid #e0e0e0;box-shadow: 0 0 10px #e0e0e0;}
+		.header .inner {width: 80%;margin: 0 auto;line-height: 26px;font-size: 14px;}
+		.header .inner .logo {display: inline-block;height: 26px;padding: 2px;margin-top: -5px;}
+		.header .inner .menu {float: right;}
+		.header .inner .menu a {margin-left: 10px;}
+		.main {width: 80%;margin: 0 auto;}
+		.footer {border-top: 1px solid #e0e0e0;clear: both;line-height: 18px;}
+		.footer .inner {padding: 15px;color: #888;width: 80%;margin: 0 auto;}
+		.online-area {float: right;font-size: 12px;color: #bcbcbc;margin-top: 2px;}
+		.online-flag {float: left;width: 6px;height: 6px;border-radius: 5px;background: green;margin: 6px 3px 0 0;}
+		.flashes {margin: 6px 10px 0 10px;color: red;text-shadow: 0 0 1px #eee;}
+		.left-box {width: 66%;}
+		.right-box {width: 30%;float: right;}
+		.nd_list a {display: inline-block;border: 1px solid #ececec;height: 20px;padding: 2px 8px;border-radius: 12px;box-shadow: 0 0 8px #efefef inset;}
+		.nd_list a:hover {box-shadow: 0 0 8px #efefef;}
+		.n_title {border-bottom: 1px solid #ececec;padding: 6px 2px;}
+		.n_content {color: #454545;line-height: 28px;padding: 5px 2px;}
+	</style>
+	{% endblock %}
+	<title>{% block title %}{% endblock%}</title>
+</head>
+<body>
+	<div class="header">
+		<div class="inner">
+			<a class="logo" href="/"><img src="https://witalk.cc/r/witalk/witalk.png" height="26" /></a>
+			<div class="menu">
+				{%if 'ol_user' not in session %}
+				<a href="/login">登录</a>
+				<a href="/register">注册</a>
+				{%else%}
+				<a href="/">首页</a>
+				<a href="/msgbox">信箱</a>
+				<a href="/home">{{session.ol_user.name}}</a>
+				<a href="javascript:logout();">登出</a>
+				{%endif%}
+			</div>
+		</div>
+	</div>
+	<div style="height: 12px;"></div>
+	<div class="main">
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			<ul class="flashes">
+			{% for message in messages %}
+				<li>{{ message }}</li>
+			{% endfor %}
+			</ul>
+		{% endif %}
+	{% endwith %}
+	<div class="right-box">
+	{%block right%}
+	{%endblock%}
+	</div>
+	<div class="left-box">
+	{% block body %}
+	{% endblock%}
+	</div>
+	</div>
+	<div class="footer">
+		<div class="inner">
+			&copy;&nbsp;&nbsp;2018&nbsp;&nbsp;WITALK.CC&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;<a href="/privacy">隐私</a>&nbsp;&nbsp;<a href="/thanks">鸣谢</a>&nbsp;&nbsp;<a href="/about">关于</a>
+			<span class="online-area"><span class="online-flag"></span><a href="/onlines"><span style="font-weight: bold;">{{onlines()|length}}</span>在线</span></a>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+	function logout(){
+		if(confirm('确定登出？')){
+			window.location.href = '/logout?back=/'
+		}
+	}
+</script>
+{% block script %}
+{% endblock %}
+</html>

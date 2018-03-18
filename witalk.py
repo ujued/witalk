@@ -1,13 +1,13 @@
-import json
-from flask import Blueprint, current_app, request, render_template, session, redirect
+import json, markdown2
+from flask import Blueprint, current_app, request, render_template, session, redirect, g, flash
 from tools import filter_sql, page_turning_info, get_date_fashion, get_post_device, support_at
-from tools import create_recent_topic_item, from_answer_notify_user, from_topic_notify_user
+from tools import create_recent_topic_item, from_answer_notify_user, from_topic_notify_user, check_auth_topic, check_topic_append
 
 bp = Blueprint('wit', __name__)
 
 @bp.route('/')
 def index():
-	return render_template('index.html', all_focus="class='nd-focus'",lang_focus='',archer_focus='',qa_focus='',trade_focus='', quickindex = 'all')
+	return render_template(g.tperfix + 'index.html', all_focus="class='nd-focus'",lang_focus='',archer_focus='',qa_focus='',trade_focus='', quickindex = 'all')
 
 @bp.route('/<node_name>')
 def index__(node_name):
@@ -28,7 +28,7 @@ def index__(node_name):
 		trade_focus = "class='nd-focus'"
 	else:
 		return render_template('404.html')
-	return render_template('index.html', all_focus=all_focus,programming_focus=programming_focus,art_focus=art_focus,hot_focus=hot_focus,trade_focus=trade_focus, quickindex = node_name)
+	return render_template(g.tperfix + 'index.html', all_focus=all_focus,programming_focus=programming_focus,art_focus=art_focus,hot_focus=hot_focus,trade_focus=trade_focus, quickindex = node_name)
 
 @bp.route('/new/<int:id>', methods = ['GET', 'POST'])
 def post(id):
@@ -38,9 +38,9 @@ def post(id):
 		return render_template('404.html')
 	forum = conn.execute('select id, name from forum where id=%d ' % id).first()
 	if 'ol_user' not in session :
-		return redirect('/passport/login')
+		return redirect('/login?back=/new/%d' % id)
 	if request.method == 'GET':
-		return render_template('new.html', param = None, forum = forum)
+		return render_template(g.tperfix + 'new.html', param = None, forum = forum)
 	user = session['ol_user']
 	title = request.form['title']
 	content = request.form['content']
@@ -85,7 +85,7 @@ def post(id):
 			else:
 				message = '失败!'
 		conn.close()
-	return render_template('new.html', message = message, param = param, forum = forum)
+	return render_template(g.tperfix + 'new.html', message = message, param = param, forum = forum)
 
 @bp.route('/reply/<int:id>', methods = ['POST'])
 def reply(id):
@@ -152,7 +152,7 @@ def list(id):
 		if conn.execute("select count(id) from collection where collect_cate='f' and collect_id=%d and owner_id=%d" % (id, session['ol_user']['id'])).first()[0] != 0:
 			collected = True
 	conn.close()
-	return render_template('forum.html', forum = forum, topic_count = topic_count, collected = collected)
+	return render_template(g.tperfix + 'forum.html', forum = forum, topic_count = topic_count, collected = collected)
 
 def create_topic_item(row, conn):
 	user = conn.execute('select id,`name`, avatar from user where id=%d' % row.author_id).first()
@@ -252,12 +252,25 @@ def mytopics(uid, pid):
 	conn.close()
 	return json.dumps(json_topics, ensure_ascii = False)
 
+def create_append_item(row, conn):
+	user = conn.execute('select id, name, avatar from user where id=%d' % row.author_id).first()
+	return{
+		'author':{
+			'id': user.id,
+			'name':user.name,
+			'avatar':user.avatar
+		},
+		'date':get_date_fashion(row.append_date),
+		'content':row.append_content
+	}
+
 @bp.route('/t/<int:id>')
 def view(id):
 	conn = current_app.mysql_engine.connect()
 	topic = conn.execute('select * from topic where id=%d' % id).first()
 	if topic is None:
-		return render_template('404.html')
+		flash('主题不存在，可能因违法被回收！')
+		return render_template(g.tperfix + '404.html')
 	conn.execute('update topic set view_count=view_count+1 where id=%d' % id) # view_count
 	forum = conn.execute('select id, name from forum where id=%d' % topic.forum_id).first()
 	author = conn.execute('select id, name, avatar from user where id=%d' % topic.author_id).first()
@@ -273,8 +286,15 @@ def view(id):
 			'post_date':last_answer_info_row.post_date
 		}
 	collect_count = conn.execute("select count(id) from collection where collect_id=%d and collect_cate='t'" % id).first()[0]
+	auth_operate = check_topic_append(id, conn)
+	auth_operate += check_auth_topic(id, forum.id, conn)
+	appends_row = conn.execute('select * from append_topic where topic_id=%d' % id)
+	appends = []
+	for append_row in appends_row:
+		appends.append(create_append_item(append_row, conn))
 	conn.close()
-	return render_template('topic.html', topic = topic, forum = forum, author = author, answer_count = answer_count, collect_count = collect_count, last_answer_info = last_answer_info)
+	return render_template(g.tperfix + 'topic.html', topic = topic, forum = forum, author = author, answer_count = answer_count, collect_count = collect_count,
+		last_answer_info = last_answer_info, auth_operate = auth_operate, appends = appends)
 
 def create_answer_item(row, conn):
 	user = conn.execute('select id,`name`, avatar from user where id=%d' % row.author_id).first()
@@ -284,7 +304,7 @@ def create_answer_item(row, conn):
 		'avatar':user.avatar
 	}
 	return {
-		'content':support_at(row.content),
+		'content':support_at(markdown2.markdown(row.content)),
 		'post_date':get_date_fashion(row.post_date),
 		'via': get_post_device(row.user_agent) if row.user_agent else 'unkonwn',
 		'author':user_dict
@@ -303,3 +323,57 @@ def answers(id, pid):
 		json_answers.append(create_answer_item(answer, conn))
 	conn.close()
 	return json.dumps(json_answers, ensure_ascii = False)
+
+@bp.route('/topicdel/<int:id>')
+def topicdel(id):
+	conn = current_app.mysql_engine.connect()
+	forum_id = conn.execute('select forum_id from topic where id=%d' % id).first()
+	if forum_id == None:
+		flash('主题已移入回收站，或没有发布！')
+		return redirect('/t/%d' % id)
+	else:
+		forum_id = forum_id[0]
+	auth = check_auth_topic(id, forum_id, conn)
+	if auth != '':
+		if conn.execute('insert into topic_trash select * from topic where id=%d' % id).rowcount == 1:
+			conn.execute('delete from topic where id=%d' % id)
+			flash('主题已移入回收站！')
+		else:
+			flash('错误！')
+	else:
+		flash('不允许的操作！你没有权限！')
+	conn.close()
+	return redirect('/t/%d' % id)
+
+@bp.route('/append/<int:id>', methods = ['POST', 'GET'])
+def append(id):
+	if 'ol_user' not in session:
+		return redirect('/login?back=/append/%d' % id)
+	conn = current_app.mysql_engine.connect()
+	auth_html = check_topic_append(id, conn)
+	if auth_html == '':
+		flash('无权操作！')
+		conn.close()
+		return render_template(g.tperfix + '404.html')
+	topic = conn.execute('select id, title from topic where id=%d' % id).first()
+	append_content = ''
+	if request.method == 'POST':
+		append_content = request.form['content']
+		if append_content:
+			append_content, = filter_sql([append_content,])
+		else:
+			flash('无效请求！')
+			conn.close()
+			return render_template(g.tperfix + '404.html')
+		if len(append_content) < 6:
+			flash('追加内容不得少于6字！')
+		else:
+			count = conn.execute("insert into append_topic(append_content, author_id, topic_id) values('%s', %d, %d)" % (append_content, session['ol_user']['id'], id)).rowcount
+			if count == 1:
+				flash('续贴成功！')
+				conn.close()
+				return redirect('/t/%d' % id)
+			else:
+				flash('error.')
+	conn.close()
+	return render_template(g.tperfix + 'append.html', topic = topic, content = append_content)

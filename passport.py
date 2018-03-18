@@ -1,5 +1,5 @@
 import hashlib
-from flask import Blueprint, current_app, request, render_template, session, redirect, flash
+from flask import Blueprint, current_app, request, render_template, session, redirect, flash, g
 from tools import filter_sql
 
 bp = Blueprint('passport', __name__)
@@ -22,7 +22,7 @@ def create_user_dict(row):
 @bp.route('/login', methods = ['GET', 'POST'])
 def  login():
 	if request.method == 'GET':
-		return render_template('login.html')
+		return render_template(g.tperfix + 'login.html')
 	id = request.form['id']
 	password = request.form['password']
 	if id == None or len(id) < 1 :
@@ -46,17 +46,17 @@ def  login():
 			if backurl:
 				return redirect(backurl)
 			return redirect('/home')
-	return render_template('login.html', message = message)
+	return render_template(g.tperfix + 'login.html', message = message)
 
 @bp.route('/register', methods = ['POST', 'GET'])
 def register():
 	if request.method == 'GET':
-		return render_template('register.html')
+		return render_template(g.tperfix + 'register.html')
 	username = request.form['username']
 	password = request.form['password']
 	email = request.form['email']
-	if username == None or len(username) < 1 or username.isdigit() :
-		message = '用户名不能为空或者数字.'
+	if username == None or len(username) < 1 or username.isdigit() or ' ' in username:
+		message = '用户名只能由字母数字下划线构成, 且不能为纯数字!'
 	elif password == None or len(password) < 6:
 		message = "密码不能少于6位."
 	elif email == None or len(email) < 8 or '@' not in email:
@@ -80,7 +80,7 @@ def register():
 		else:
 			message = '你注册过啦！可以用邮箱找回凭证。'
 		conn.close()
-	return render_template('register.html', message = message)
+	return render_template(g.tperfix + 'register.html', message = message)
 
 @bp.route('/profile/<int:id>')
 def profile(id):
@@ -89,33 +89,47 @@ def profile(id):
 	if user_row == None:
 		conn.close()
 		return render_template('404.html')
+	auth_info = conn.execute('select forum_id from administrator where author_id=%d' % id).first()
 	conn.close()
+	if auth_info :
+		if auth_info[0] == 0:
+			auth = '管理'
+		else:
+			auth = '版主'
+	else:
+		auth = '用户'
 	online_usernames = current_app.online_usernames
 	if user_row.name in online_usernames:
 		user_online = True
 	else:
 		user_online = False
-	return render_template('profile.html', user = user_row, user_online = user_online)
+	return render_template(g.tperfix + 'profile.html', user = user_row, user_online = user_online, auth = auth)
 
 @bp.route('/profile/<username>')
 def profile_name(username):
 	import urllib
 	username = urllib.parse.unquote(username)
 	if "'" in username:
-		return render_template('404.html')
+		return render_template(g.tperfix + '404.html')
 	conn = current_app.mysql_engine.connect()
-	user_row = conn.execute("select id, name, gender, age, email, register_date, avatar, points,signature, my_page, github_name, location from user where `name`='%s'" % username).first()
-	if user_row == None:
+	# user_row = conn.execute("select id, name, gender, age, email, register_date, avatar, points,signature, my_page, github_name, location from user where `name`='%s'" % username).first()
+	# if user_row == None:
+	# 	conn.close()
+	# 	return render_template('404.html')
+	# conn.close()
+	# online_usernames = current_app.online_usernames
+	# if user_row.name in online_usernames:
+	# 	user_online = True
+	# else:
+	# 	user_online = False
+	# return render_template(g.tperfix + 'profile.html', user = user_row, user_online = user_online)
+	id = conn.execute("select id from user where name='%s'" % username).first()
+	if id :
 		conn.close()
-		return render_template('404.html')
-	conn.close()
-	online_usernames = current_app.online_usernames
-	if user_row.name in online_usernames:
-		user_online = True
+		return profile(id[0])
 	else:
-		user_online = False
-	return render_template('profile.html', user = user_row, user_online = user_online)
-
+		conn.close()
+		return render_template(g.tperfix + '404.html')
 @bp.route('/home')
 def home():
 	if 'ol_user' not in session :
@@ -123,7 +137,7 @@ def home():
 	conn = current_app.mysql_engine.connect()
 	user = conn.execute('select id,avatar,points,name,age,gender,signature,my_page,email, location, github_name from user where id=%d' % session['ol_user']['id']).first()
 	conn.close()
-	return render_template('home.html', user = user)
+	return render_template(g.tperfix + 'home.html', user = user)
 
 @bp.route('/chinfo', methods = ['POST'])
 def chinfo():
@@ -206,4 +220,4 @@ def logout():
 
 @bp.route('/backpasswd')
 def backpasswd():
-	return render_template('backpasswd.html', message = '系统异常！密码找回系统暂无法使用！')
+	return render_template(g.tperfix + 'backpasswd.html', message = '系统异常！密码找回系统暂无法使用！')

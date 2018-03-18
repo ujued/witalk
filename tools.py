@@ -46,9 +46,13 @@ def get_date_fashion(dt):
 def get_post_device(user_agent):
 	if user_agent is None:
 		return None
-	device = user_agent.split(')')[0].split('; ')[-1]
-	konwns_rel_devices = ['Letv X500', 'vivo X9', 'PRA-AL00X', 'Linux', 'iPhone OS', 'google.com', 'baidu.com']
-	konwns_devices = ['Le 1s', 'vivo X9', '荣耀8青春版', 'Linux', 'iPhone', 'Google爬虫','Baidu爬虫']
+	device = user_agent.split(')')[0].split('(')[-1]
+	konwns_rel_devices = ['Letv X500', 'vivo X9', 'PRA-AL00X', 'Linux x86_64', 'iPhone', 'MI 5', 'MI 6', 'Redmi Note 4X', 'MI 4LTE', 'SM919', 
+		'Windows NT 10', 'Windows NT 6', 'Windows NT 5', 'google.com', 'baidu.com', 'mj12bot.com',   'MHA-AL00',        'ZUK',     'm3 note', 'Redmi 5 Plus',
+		'JMM-AL 10',       'MZ-PRO 6s', 'Le  X820']
+	konwns_devices =         ['Le 1s',     'vivo X9', '荣耀8青春版', 'Linux64位',      'iPhone', 'MI 5', 'MI 6', '红米4X',    'MI 4', 'SmartisanT M1', 
+		'Windows 10',           'Windows 7',    'Windows XP',             '匿名',           '匿名',         '匿名', 'HUAWEI Mate9', '联想手机', '魅蓝note3', '红米5 Plus', 
+		'荣耀V9 Play', '魅族 Pro 6s', 'Le Max2']
 	index = -1
 	for d in konwns_rel_devices:
 		index+=1
@@ -58,10 +62,11 @@ def get_post_device(user_agent):
 	return device
 
 def support_at(content):
-	users = re.findall('@[^ @\r\n\t,]+ ', content)
+	users = re.findall('@[^ @\r\n\t,，]+ ', content)
 	users = list(set(users))
 	for user in users:
 		content = content.replace(user, '<a href="/profile/%s">%s</a>' % (user[1:][:-1], user))
+	content = content.replace(';\r\n', ';<br />').replace(';\n', ';<br />').replace('\n    ', '<br />&nbsp;&nbsp;&nbsp;&nbsp;').replace('    ', '&nbsp;&nbsp;&nbsp;&nbsp;')
 	return content
 
 def from_topic_notify_user(content, title, id, conn):
@@ -136,3 +141,32 @@ def create_recent_topic_item(row, conn):
 			'avatar':answer_author.avatar
 		} if answer_info else 'None'
 	}
+
+def check_auth_topic(topic_id, forum_id, conn):
+	if 'ol_user' not in session:
+		return ''
+	the_forum_id = conn.execute('select forum_id from administrator where author_id=%d' % session['ol_user']['id']).first()
+	if the_forum_id == None:
+		return ''
+	else:
+		the_forum_id = the_forum_id[0]
+	count = conn.execute('select count(id) from topic where author_id=%d and id=%d' % (session['ol_user']['id'], topic_id)).first()[0]
+	if the_forum_id == 0 or forum_id == the_forum_id  or count == 1:
+		return '<a href="javascript:deltopic();">删除</a>'
+	else:
+		return ''
+
+def check_topic_append(topic_id, conn):
+	if 'ol_user' not in session:
+		return ''
+	user = session['ol_user']
+	author_id = conn.execute('select author_id from topic where id=%d' % topic_id).first()
+	if not author_id:
+		return ''
+	else:
+		author_id = author_id[0]
+	auth_code = conn.execute('select forum_id from administrator where author_id=%d' % user['id']).first()
+	if user['id'] == author_id or (auth_code and auth_code[0] == 0):
+		return '<a href="/append/%d">续贴</a>' % topic_id
+	else:
+		return ''

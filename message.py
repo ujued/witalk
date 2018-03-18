@@ -1,4 +1,4 @@
-from flask import Blueprint, current_app, request, render_template, redirect, session, flash
+from flask import Blueprint, current_app, request, render_template, redirect, session, flash, g
 from tools import get_date_fashion, filter_sql
 
 bp = Blueprint('message', __name__)
@@ -34,7 +34,7 @@ def read_messages():
 		messages.append(create_message_item(message, conn))
 	conn.close()
 	messages.reverse()
-	return render_template('msgbox.html', receive = True, messages = messages, title='未读信息 • <a href="/msgbox/all">收件箱</a>&nbsp;&nbsp;<a href="/msgbox/send">发件箱</a>')
+	return render_template(g.tperfix + 'msgbox.html', receive = True, messages = messages, title='未读信息 • <a href="/msgbox/all">收件箱</a>&nbsp;&nbsp;<a href="/msgbox/send">发件箱</a>')
 
 @bp.route('/msgbox/all')
 def all_messages():
@@ -48,7 +48,7 @@ def all_messages():
 		messages.append(create_message_item(message, conn))
 	conn.close()
 	messages.reverse()
-	return render_template('msgbox.html', receive = True, messages = messages, title='收件箱 • <a href="/msgbox">未读信息</a>&nbsp;&nbsp;<a href="/msgbox/send">发件箱</a>')
+	return render_template(g.tperfix + 'msgbox.html', receive = True, messages = messages, title='收件箱 • <a href="/msgbox">未读信息</a>&nbsp;&nbsp;<a href="/msgbox/send">发件箱</a>')
 
 @bp.route('/msgbox/send')
 def send_messages():
@@ -62,28 +62,28 @@ def send_messages():
 		messages.append(create_message_item(message, conn))
 	conn.close()
 	messages.reverse()
-	return render_template('msgbox.html', noreply = True, send = True, messages = messages, title = '发件箱 • <a href="/msgbox">未读信息</a>&nbsp;&nbsp;<a href="/msgbox/all">收件箱</a>')
+	return render_template(g.tperfix + 'msgbox.html', noreply = True, send = True, messages = messages, title = '发件箱 • <a href="/msgbox">未读信息</a>&nbsp;&nbsp;<a href="/msgbox/all">收件箱</a>')
 
 @bp.route('/msgsend', methods = ['POST', 'GET'])
 def send_message():
 	if 'ol_user' not in session:
 		return redirect('/login?back=/msgsend')
 	if request.method == 'GET':
-		to_user = None
+		to_user = ''
 		if request.args.get('to'):
 			to_user = request.args.get('to')
-		import urllib
-		to_user = urllib.parse.unquote(to_user)
-		if "'" in to_user:
-			return render_template('404.html')
-		return render_template('msgsend.html', to_user = to_user)
+			import urllib
+			to_user = urllib.parse.unquote(to_user)
+			if "'" in to_user:
+				return render_template(g.tperfix + '404.html')
+		return render_template(g.tperfix + 'msgsend.html', to_user = to_user)
 	user = session['ol_user']
 	to_user = request.form['username']
 	msg_content = request.form['content']
 	if to_user is None or msg_content is None or len(msg_content) < 1:
-		return render_template('msgsend.html', message = '接收者不能为空，信息内容不能为空！')
+		return render_template(g.tperfix + 'msgsend.html', message = '接收者不能为空，信息内容不能为空！')
 	if to_user == user['name']:
-		return render_template('msgsend.html', message = '不能给自己发信息！')
+		return render_template(g.tperfix + 'msgsend.html', message = '不能给自己发信息！')
 	to_user, msg_content = filter_sql([to_user, msg_content])
 	conn = current_app.mysql_engine.connect()
 	to_id_row = conn.execute("select id from user where name='%s'" % to_user).first()
@@ -96,7 +96,7 @@ def send_message():
 		else:
 			message = 'Error.'
 	conn.close()
-	return render_template('msgsend.html', message = message)
+	return render_template(g.tperfix + 'msgsend.html', message = message)
 
 @bp.route('/msgdel/<int:id>')
 def msgdel(id):

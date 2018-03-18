@@ -1,14 +1,13 @@
-{% extends "template.html" %}
+{% extends "pc/template.html" %}
 {% block head %}
 {{super()}}
 <meta name="keywords" content="WITALK,智慧,交流,开发者社区" />
 <meta name="description" content="WITALK是以程序员为中心的由论坛组成的开发者社区，涉猎丰富，有技术区，生活区，和一些情感、见闻分享等杂类。崇尚价值与信息量，我们在一起，未来一定是程序员的。" />
-<title>WITALK - 智慧·讨论 - 开发者社区</title>
+<title>WITALK - 智慧·讨论</title>
 <style type="text/css">
-	.nologin {margin: 10px 10px 0 10px;color: green;}
-	.index-nav {padding: 12px 4px 8px 4px;border-bottom: 1px solid #efefef;line-height: 14px;}
+	.index-nav {padding: 8px 4px 8px 4px;border-bottom: 1px solid #AAB0C6;line-height: 14px;}
 	.index-nav .forums {float: right;margin-top: -2px;padding:2px;height: 22px;width: 22px;}
-	.index-nav a {display: inline-block;padding: 6px 4px;color: #444;border-radius: 2px;margin: 0 2px;}
+	.index-nav a {display: inline-block;padding: 6px 8px;color: #444;border-radius: 2px;margin: 0;}
 	.index-nav a:hover {background: #feeeee;}
 	.index-nav .nd-focus {background: #07111B;color: #fcfcfc;}
 	.index-nav .nd-focus:hover {background: #565656;color: #fcfcfc;}
@@ -18,27 +17,27 @@
 	.switch button:last-child {border-radius: 0 9px 9px 0;}
 	.switch .selected {}
 	.list {}
-	.list li {border-bottom: 1px solid #eee;padding: 8px 10px;line-height: 20px;}
+	.list li {border-bottom: 1px solid #eee;padding: 10px 10px;line-height: 20px;}
 	.list li:last-child {border-bottom: none;}
-	.list li .avatar {float: left;padding: 2px;width: 22px;height: 22px;margin-top: -2px;}
-	.list li .avatar img {border-radius: 2px;}
-	.list li .topic {margin-left: 32px;}
+	.list li .avatar {float: left;padding: 3px;width: 44px;height: 44px;margin-top: -4px;}
+	.list li .avatar img {border-radius: 4px;}
+	.list li .topic {margin-left: 54px;margin-top: 3px;}
 	.list li .topic a:first-child {color: #444;font-size: 16px;}
 	.list li .topic a:first-child:hover {text-decoration: underline;color: #000;}
-	.list li .topic-info {margin: 0 0 10px 32px;color: #888;font-size: 12px;}
-	.list li .answer_count {float: right;display: inline-block;background: #efefef;color: #454545;font-weight: bold;height: 14px;line-height: 14px;padding: 0px 6px;border-radius: 7px;margin: 2px 5px 0 0;font-size: 12px;}
+	.list li .topic-info {margin: 0 0 10px 54px;color: #888;font-size: 12px;}
+	.list li .answer_count {float: right;display: inline-block;background: #efefef;color: #454545;font-weight: bold;height: 16px;line-height: 16px;padding: 0px 8px;border-radius: 9px;margin: 2px 5px 0 0;font-size: 14px;}
 	.list li .answer_count:hover {background: #ccc;}
-	.list li .last_answer_info {margin-left: 32px;color: #888;font-size: 12px;margin-top: 10px;}
+	.list li .last_answer_info {margin-left: 54px;color: #888;font-size: 12px;margin-top: 6px;}
 	.list li .forum {display: inline-block;padding: 0 5px;background: #feeeee;border-radius: 2px;color: #787878;}
 	.list li .forum:hover {background: #ceeeee;color: #222;}
 	.tip {padding: 10px;border-top: 1px solid #efefef;text-align: right;display: none;}
 	.title {font-weight: bold;color: #c8c8c8;border-bottom: 1px solid #efefef;padding: 10px;}
 </style>
-{% endblock %}{% block body %}
-	{%if 'ol_user' not in session%}<div class="nologin">某技术领域有疑惑？<a href="/f/1">跟我走→</a></div>{%endif%}
+{% endblock %}{%block right%}{%include 'pc/forums.html'%}{%endblock%}{% block body %}
 	<div class="index-nav">
 		<a class="forums" href="/forums"><img src="https://witalk.cc/r/witalk/rightarrow.png" height="22" /></a>
 		<a href="/f/1">问与答</a>
+		<a href="/new/1">立即提问</a>
 		<a {{all_focus|safe}} href="/">全部</a>
 		<a {{programming_focus|safe}} href="/programming">编程</a>
 		<a {{art_focus|safe}} href="/art">文艺</a>
@@ -49,8 +48,6 @@
 	<div id="list" class="list"></div>
 	<div class="list"><li><a id="get-more" href="javascript:;">数据加载中...</a></li></div>
 	<div id="tip" class="tip"><a href="#top">按最新排序查看更多主题↑</a></div>
-	<div class="line"></div>
-	<div style="padding: 10px 0 0 0;">{%include 'forums-content.html'%}</div>
 {% endblock %}
 {% block script %}
 <script type="text/javascript">
@@ -96,8 +93,8 @@
 				if(topic.last_reply_date == 'None')
 					last_answer_info = '';
 				else
-					last_answer_info = '<div class="last_answer_info">' + topic.last_reply_date +'前 • <a class="username" href="/profile/'+ topic.last_reply_author.id +'">'+ topic.last_reply_author.name +'</a>最后回复</div>'
-				list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="22" /></a><div class="topic-info"><a class="forum" href="/f/'+ topic.forum.id +'">'+ topic.forum.name +'</a> · <a class="username" href="/profile/'+ topic.author.id+'">'+ topic.author.name +'</a> · '+ topic.post_date +'前</div><div class="topic"><a href="/t/' + topic.id + '">' + topic.title + '</a><a class="answer_count" href="/t/'+ topic.id +'">'+ topic.answer_count +'</a></div>'+ last_answer_info +'</li>\n';
+					last_answer_info = ' • 由<a class="username" href="/profile/'+ topic.last_reply_author.id +'">'+ topic.last_reply_author.name +'</a>' + topic.last_reply_date +'前最后回复'
+				list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="44" height="44" /></a><div class="topic-info"><a class="forum" href="/f/'+ topic.forum.id +'">'+ topic.forum.name +'</a> • 由<a class="username" href="/profile/'+ topic.author.id+'">'+ topic.author.name +'</a>'+ topic.post_date +'前发布'+ last_answer_info +'</div><div class="topic"><a href="/t/' + topic.id + '">' + topic.title + '</a><a class="answer_count" href="/t/'+ topic.id +'">'+ topic.answer_count +'</a></div></li>\n';
 			}
 			get_more.style.display = 'none';
 		});
@@ -118,7 +115,7 @@
 			count = 0;
 			for(posi in topics){
 				topic = topics[posi];
-				list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="22" /></a><div class="topic-info"><a class="forum" href="/f/'+ topic.forum.id +'">'+ topic.forum.name +'</a> · <a class="username" href="/profile/'+ topic.author.id+'">'+ topic.author.name +'</a> · '+ topic.post_date +'前</div><div class="topic"><a href="/t/' + topic.id + '">' + topic.title + '</a><a class="answer_count" href="/t/'+ topic.id +'">'+ topic.answer_count +'</a></div></li>\n';
+				list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="44" /></a><div class="topic-info"><a class="forum" href="/f/'+ topic.forum.id +'">'+ topic.forum.name +'</a> · <a class="username" href="/profile/'+ topic.author.id+'">'+ topic.author.name +'</a> · '+ topic.post_date +'前</div><div class="topic"><a href="/t/' + topic.id + '">' + topic.title + '</a><a class="answer_count" href="/t/'+ topic.id +'">'+ topic.answer_count +'</a></div></li>\n';
 				count++;
 			}
 			if(count < 12) {
@@ -145,7 +142,7 @@
 			count = 0
 			for(posi in topics){
 				topic = topics[posi];
-				list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="22" /></a><div class="topic-info"><a class="forum" href="/f/'+ topic.forum.id +'">'+ topic.forum.name +'</a> · <a class="username" href="/profile/'+ topic.author.id+'">'+ topic.author.name +'</a> · '+ topic.post_date +'前 · '+ topic.answer_count +'回复</div><a class="topic" href="/t/' + topic.id + '">' + topic.title + '</a></li>\n';
+				list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="44" /></a><div class="topic-info"><a class="forum" href="/f/'+ topic.forum.id +'">'+ topic.forum.name +'</a> · <a class="username" href="/profile/'+ topic.author.id+'">'+ topic.author.name +'</a> · '+ topic.post_date +'前</div><div class="topic"><a href="/t/' + topic.id + '">' + topic.title + '</a><a class="answer_count" href="/t/'+ topic.id +'">'+ topic.answer_count +'</a></div></li>\n';
 				count++;
 			}
 			if(count < 12) {

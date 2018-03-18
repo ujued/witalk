@@ -1,4 +1,4 @@
-{% extends 'template.html' %}
+{% extends 'pc/template.html' %}
 {% block head %}
 {{super()}}
 	<title>{{user.name}}的资料</title>
@@ -7,8 +7,8 @@
 		.userinfo .avatar{display: block;border-radius: 8px;margin: 0 auto;border: 6px solid #efefef;width: 68;height: 68px;float: left;}
 		.userinfo .online,.userinfo .offline {display: inline-block;width: 10px;height: 10px;border-radius: 6px;background: green;position: absolute;top:72px;left: 78px;}
 		.userinfo .offline {background: #cfcfcf;}
-		.userinfo .auth {display: inline-block;height: 16px;line-height: 18px; border-radius: 2px;background: #454545;color: #fff;padding: 0 6px;position: absolute;top:66px;left: 34px;font-size: 10px;font-weight: 100;text-shadow: 0 0 1px #ccc;box-shadow: 0 0 4px #222;}
-		.userinfo .send_msg {float: right;display: inline-block;width: 52px;height: 22px;line-height: 22px;border-radius: 3px;color: #fff;background: #2B99FF;text-align: center;font-size: 12px;margin-top: 8px;}
+		.userinfo .auth {display: inline-block;height: 18px;line-height: 18px;border-radius: 3px;background: #840914;color: #fff;padding: 0 4px;letter-spacing: 1px;position: absolute;top:65px;left: 34px;font-size: 12px;font-weight: 100;}
+		.userinfo .send_msg {float: right;display: inline-block;width: 52px;height: 22px;line-height: 22px;border-radius: 3px;color: #fff;background: #2B99FF;text-align: center;font-size: 12px;margin-top: 5px;}
 		.userinfo .send_msg:hover {opacity: 0.8;}
 		.userinfo .gender {position: absolute;top:1px;left: 72px;}
 		.userinfo .textinfo {margin: 2px 0 0 92px;height: 96px;}
@@ -35,6 +35,7 @@
 {% block body%}
 	<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;人物简介</div>
 	<div class="userinfo">
+		{%if 'ol_user' in session and session['ol_user']['name'] != user.name%}<a class="send_msg" href="/msgsend?to={{user.name}}">发消息</a>{%endif%}
 		<img style="margin-top: 3px;" class="avatar" src="{{user.avatar}}" width="68" height="68" />
 		<span class="{% if user_online %}online{%else%}offline{%endif%}"></span>
 		<span>{% if user.gender == 'M'%}<img class="gender" src="https://witalk.cc/r/witalk/m.gender.png" alt="男" width="20" />{%else%}<img class="gender" src="https://witalk.cc/r/witalk/f.gender.png" alt="男" width="20" />{% endif %}</span>
@@ -43,7 +44,6 @@
 			<span style="font-size: 18px;font-weight: bold;margin: 2px 12px 0 0;">{{user.name}}</span>
 			<span>{{user.age}}岁</span>·
 			<span>{{user.points}}<img style="float: right;margin: 3px 0 0 2px;" src="https://witalk.cc/r/witalk/points.icon.png" width="20" alt="points" /></span>
-			{%if 'ol_user' in session and session['ol_user']['name'] != user.name%}<a class="send_msg" href="/msgsend?to={{user.name}}">发消息</a>{%endif%}
 			<p>WITALK第<span style="font-weight: bold;margin: 0 2px;">{{user.id}}</span>号会员<br />{{user.register_date}}加入</p>
 		</div>
 		<div class="signature">

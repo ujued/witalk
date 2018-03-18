@@ -1,4 +1,4 @@
-from flask import Blueprint, current_app, request, render_template, redirect, session, flash
+from flask import Blueprint, current_app, request, render_template, redirect, session, flash, g
 from tools import get_date_fashion, filter_sql
 from witalk import create_topic_item
 
@@ -37,7 +37,7 @@ def collections():
 	conn.close()
 	f_collections.reverse()
 	t_collections.reverse()
-	return render_template('collections.html', f_collections = f_collections, t_collections = t_collections)
+	return render_template(g.tperfix + 'collections.html', f_collections = f_collections, t_collections = t_collections)
 
 @bp.route('/collect/<cate>/<int:id>')
 def collect(cate, id):

@@ -1,10 +1,9 @@
-{%extends 'template.html'%}
+{%extends 'pc/template.html'%}
 {%block head%}{{super()}}
 	<title>个人中心</title>
 	<style type="text/css">
 		.list {padding: 10px;line-height: 30px;color: #222;}
 		.list li{clear: both;}
-		.list li .avatar {float: left;margin-right: 8px;width: 50px;height: 50px;}
 		.edit-info {padding: 10px;margin: 0 5px;display: none;}
 		.edit-info input, .edit-info textarea , .edit-info select {width: 100%;border: 1px solid #bcbcbc;height: 26px;line-height: 26px;padding: 0 5px;margin-left: -5px;}
 		.edit-info textarea {height: 52px;max-width: 100%;}
@@ -13,13 +12,11 @@
 		.links {padding: 10px;}
 		.links a {display: block;height: 32px;line-height: 32px;border-bottom: 1px solid #efefef;color: #787878;}
 		.links a:hover{color: #222;text-shadow: 0 0 1px #ccc;}
-		.onlines {padding: 5px 10px;line-height: 14px;background: #efefef;color: #565656;}
-		.onlines a {display: inline-block;padding: 0 2px;}
 	</style>
 {%endblock%}{%block body%}
 	<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;个人中心</div>
 	<ul class="list">
-		<li style="border-bottom: 1px solid #efefef;height: 60px;line-height: 22px;"><img class="avatar" src="{{user.avatar}}" width="50" height="50" /><span style="float: right;color: #ccc;font-size: 12px;margin-top: -2px;">Signature</span>{{user.signature}}</li>
+		<li style="border-bottom: 1px solid #efefef;height: 60px;line-height: 22px;"><img style="float: left;margin-right: 8px;" src="{{user.avatar}}" width="50" /><span style="float: right;color: #ccc;font-size: 12px;margin-top: -2px;">Signature</span>{{user.signature}}</li>
 		<li>称呼:<span style="font-weight: bold;">{{user.name}}</span> ({{user.age}}岁, {% if user.gender == 'M'%}男生{%else%}女生{% endif %})</li>
 		<li>UID:{{user.id}}</li>
 		<li>Email:{{user.email}}</li>
@@ -49,10 +46,8 @@
 		<a href="javascript:;" onclick="open_chpasswd(this);">修改密码</a>
 		<a href="/pictures">我的图库</a>
 		<a href="/collections">收藏室</a>
-		<a href="/trash">回收站</a>
 		<a href="javascript:logout();">登出</a>
 	</div>
-	<div class="onlines">WITALK当前在线<a href="/onlines">{{onlines()|length}}</a>人。</div>
 {%endblock%}{%block script%}
 <script type="text/javascript">
 	var edit_area = document.getElementById('edit_area');

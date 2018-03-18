@@ -1,20 +1,21 @@
-<!doctype html>
-<html>
-<head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=2.0" />
-	<title>404 Page</title>
-	<style type="text/css">
-		* {padding: 0;margin: 0;list-style: none;}
-		body {font-size: 14px;font-family: "Raleway","Microsoft Jhenghei","Microsoft Yahei","Helvetica Neue",HelveticaNeue,Arial,sans-serif;}
-		a {text-decoration: none;}
-		.content {padding: 10px;font-size: 20px;color: #222;}
-	</style>
-</head>
-<body>
-	<div class="content">
-		This page not found! (404)<br />
-		<a href="javascript:history.go(-1);">返回</a>
+{%extends 'template.html'%}
+{%block head%}{{super()}}
+<title>页面找不到了, 404 Page</title>
+<style type="text/css">
+	.tip {margin: 10px;line-height: 26px;color: #454545;}
+	.t404 {margin: 10px;font-size: 36px;font-style: italic;letter-spacing: 0px;color: #ccc;font-weight: bold;}
+	.t404 span:first-child {font-style: normal;}
+	.t404 span:last-child {font-style: normal;}
+</style>
+{%endblock%}{%block body%}
+	<div class="t404">
+		<span>4</span>
+		<span>0</span>
+		<span>4</span>
 	</div>
-</body>
-</html>
+	<div class="tip">
+		页面找不到了，可能是系统升级导致页面地址更换。<br />
+		如果这个地址内容很重要，请<a href="/msgsend?to=ujued"> 通知管理员 </a>找回此地址。<br />
+		<a href="javascript:history.go(-1);">← 返回</a>
+	</div>
+{%endblock%}
