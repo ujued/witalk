@@ -14,7 +14,7 @@ class Connection(object):
         self._closed = False
         self.proto.autocommit(True)
         self.result = None
-    def begin():
+    def begin(self):
         self.proto.autocommit(False)
     def commit(self):
         if not self.proto.autocommit_mode:

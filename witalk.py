@@ -1,7 +1,6 @@
 import json, markdown2
 from flask import Blueprint, current_app, request, render_template, session, redirect, g, flash, jsonify
 from tools import *
-from threading import current_thread
 from services import svc_user
 
 bp = Blueprint('wit', __name__)
@@ -18,7 +17,7 @@ def index__(node_name):
 
 @bp.route('/new/<int:id>', methods = ['GET', 'POST'])
 def post(id):
-	conn = current_app.connections[current_thread()]
+	conn = current_app.connect()
 	count = conn.execute('select count(id) from forum where id=%d' % id).first()[0]
 	if count == 0:
 		return render_template('404.html')
@@ -64,7 +63,7 @@ def post(id):
 
 @bp.route('/reply/<int:id>', methods = ['POST'])
 def reply(id):
-	conn = current_app.connections[current_thread()]
+	conn = current_app.connect()
 	topic = conn.execute('select * from topic where id=%d' % id).first()
 	if topic is None:
 			return render_template('404.html')
@@ -93,7 +92,7 @@ def reply(id):
 
 @bp.route('/f/<int:id>')
 def list(id):
-	conn = current_app.connections[current_thread()]
+	conn = current_app.connect()
 	forum = conn.execute('select * from forum where id=%d' % id).first()
 	topic_count = conn.execute('select count(id) from topic where forum_id=%d' % id).first()[0]
 	if forum is None:
@@ -129,8 +128,7 @@ def create_topic_item(row, conn):
 
 @bp.route('/topics/<int:id>/<int:pid>')
 def topics(id, pid):
-	json_topics = []
-	conn = current_app.connections[current_thread()]
+	conn = current_app.connect()
 	if id == 0:
 		count = conn.execute('select count(id) from topic').first()[0]
 	else:
@@ -149,6 +147,7 @@ def topics(id, pid):
 		sql = 'select * from topic where forum_id=%d limit %s' % (id, page_info['limit'])
 	topics = conn.execute(sql).fetchall()
 	topics.reverse()
+	json_topics = []
 	for topic in topics:
 		json_topics.append(create_topic_item(topic, conn))
 	return json.dumps(json_topics, ensure_ascii = False)
@@ -170,7 +169,7 @@ def rtopics(cate):
 			sql += ' union select * from topic where id=%d' % int(id)
 	else:
 		return 'None'
-	conn = current_app.connections[current_thread()]
+	conn = current_app.connect()
 	dumps_topics = []
 	row = conn.execute(sql).fetchall()
 	for t1 in row:
@@ -180,7 +179,7 @@ def rtopics(cate):
 @bp.route('/mytopics/<int:uid>/<int:pid>')
 def mytopics(uid, pid):
 	json_topics = []
-	conn = current_app.connections[current_thread()]
+	conn = current_app.connect()
 	count = conn.execute('select count(id) from topic where author_id=%d' % uid).first()[0]
 	if count == 0:
 		return 'None'
@@ -213,7 +212,7 @@ def create_append_item(row, conn):
 
 @bp.route('/t/<int:id>')
 def view(id):
-	conn = current_app.connections[current_thread()]
+	conn = current_app.connect()
 	topic = conn.execute('select topic.id,view_count,topic.user_agent,topic.post_date,title,price,content,user.name author_name,user.avatar author_avatar, user.id author_id, forum.name forum_name, forum.id forum_id from topic left join user on topic.author_id = user.id left join forum  on topic.forum_id = forum.id where topic.id=%d' % id).first()
 	if topic is None:
 		flash('主题不存在，可能因违法被回收！')
@@ -262,14 +261,14 @@ def create_answer_item(row, conn):
 
 @bp.route('/answers/<int:id>/<int:pid>')
 def answers(id, pid):
-	json_answers = []
-	conn = current_app.mysql_engine.connect()
+	conn = current_app.connect()
 	count = conn.execute('select count(id) from answer where topic_id=%d' % id).first()[0]
 	page_info = page_turning_info(count, pid)
 	if not page_info['have']:
 		conn.close()
 		return 'None'
 	answers = conn.execute('select * from answer where topic_id=%d limit %s' % (id, page_info['limit'])).fetchall()
+	json_answers = []
 	for answer in answers:
 		json_answers.append(create_answer_item(answer, conn))
 	conn.close()
@@ -296,7 +295,7 @@ def create_own_answer_item(row, conn):
 	}
 @bp.route("/own_answers/<int:uid>/<int:pid>")
 def own_answers(uid, pid):
-	conn = current_app.mysql_engine.connect()
+	conn = current_app.connect()
 	count = conn.execute("select count(id) from answer where author_id=%d" % uid).first()[0]
 	page_info = page_turning_info(count, pid)
 	if not page_info['have']:
@@ -312,7 +311,7 @@ def own_answers(uid, pid):
 
 @bp.route('/topicdel/<int:id>')
 def topicdel(id):
-	conn = current_app.mysql_engine.connect()
+	conn = current_app.connect()
 	forum_id = conn.execute('select forum_id from topic where id=%d' % id).first()
 	if forum_id == None:
 		flash('主题已移入回收站，或没有发布！')
@@ -336,7 +335,7 @@ def topicdel(id):
 def append(id):
 	if 'ol_user' not in session:
 		return redirect('/login?back=/append/%d' % id)
-	conn = current_app.mysql_engine.connect()
+	conn = current_app.connect()
 	auth_html = check_topic_append(id, conn)
 	if auth_html == '':
 		flash('无权操作！')

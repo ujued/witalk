@@ -1,5 +1,5 @@
 import datetime, hashlib, re
-from flask import session, current_app, request
+from flask import session, current_app, request, flash
 def filter_sql(list):
 	for x in range(0,len(list)):
 		list[x] = list[x].replace("'", "''").replace('%', '__bfh_')
@@ -219,3 +219,17 @@ def ensure_recent_queue_when_reply(topic_id, forumid_str):
 		if topic_id in trade_ids:
 			trade_ids.remove(topic_id)
 		trade_ids.insert(0, topic_id)
+
+def transactional(func):
+	def t_wrapper(*args, **kwargs):
+		conn = current_app.connect()
+		conn.begin()
+		try:
+			result = func(*args, **kwargs)
+			conn.commit()
+		except Exception as e:
+			conn.rollback()
+			flash(e)
+			return render_template('404.html'), 404
+		return result
+	return t_wrapper

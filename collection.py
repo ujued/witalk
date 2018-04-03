@@ -25,7 +25,7 @@ def collections():
 	if 'ol_user' not in session:
 		return redirect('/login?back=/collections')
 	user = session['ol_user']
-	conn = current_app.mysql_engine.connect()
+	conn = current_app.connect()
 	f_collections_row = conn.execute("select * from collection where collect_cate='f' and owner_id=%d" % user['id']).fetchall()
 	t_collections_row = conn.execute("select * from collection where collect_cate='t' and owner_id=%d" % user['id']).fetchall()
 	f_collections = []
@@ -45,7 +45,7 @@ def collect(cate, id):
 		return redirect('/login?back=/collections')
 	user = session['ol_user']
 	cate, = filter_sql([cate,])
-	conn = current_app.mysql_engine.connect()
+	conn = current_app.connect()
 	count = conn.execute("select count(id) from collection where collect_cate='%s' and owner_id=%d and collect_id=%d" % (cate, user['id'], id)).first()[0]
 	if count == 0:
 		count = conn.execute("insert into collection(collect_cate, collect_id, owner_id) values('%s', %d, %d)" % (cate, id, user['id'])).rowcount

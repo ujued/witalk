@@ -10,3 +10,5 @@ def column(column_name, id):
 		return c_row
 	else:
 		return None
+def add_topic():
+    pass

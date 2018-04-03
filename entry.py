@@ -2,7 +2,7 @@
 import spmpool
 from flup.server.fcgi import WSGIServer
 from configuration import *
-from flask import Flask, request, g, current_app
+from flask import Flask, request, g, current_app, render_template, flash
 from threading import current_thread
 def create_app():
 	spmpool.add_config('local', user=mysql_user, password=mysql_pass, database=mysql_db, host=mysql_host, init_pool_size=20)
@@ -10,7 +10,9 @@ def create_app():
 	app.secret_key = '\x90m\x12\x98\x0b\xf4\xb8\x17m\x9eJK\x9aB`\xfe=\xe0\x99\x81S\xda-g'
 	app.permanent = True
 	app.connections = {}
+	app.connect = lambda:app.connections[current_thread()]
 	app.connection_pool = spmpool.spmpool('local')
+	app.transactional = transactional
 	################ remove soon #################
 	class engine():
 		def connect(self):
@@ -57,6 +59,20 @@ def plugin_run(app):
 	onlines.init(app)()
 	recent.init(app)()
 
+def transactional(func):
+	def t_wrapper(*args):
+		conn = current_app.connect()
+		conn.begin()
+		try:
+			result = func(*args)
+			conn.commit()
+		except Exception as e:
+			conn.rollback()
+			flash(e)
+			return render_template('404.html'), 404
+		return result
+	return t_wrapper
+
 app = create_app()
 plugin_run(app)
 
@@ -76,6 +92,7 @@ def after_request(resp): # close connection
 	ct = current_thread()
 	if ct in app.connections:
 		app.connections[ct].close()
+
 	return resp
 
 if __name__ == '__main__':

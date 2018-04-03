@@ -26,7 +26,7 @@ def read_messages():
 	if 'ol_user' not in session:
 		return redirect('/login?back=/msgbox')
 	user = session['ol_user']
-	conn = current_app.mysql_engine.connect()
+	conn = current_app.connect()
 	read_messages = conn.execute('select * from message where to_id=%d and readed=0 and (first_del_id is null or first_del_id<>%d)' % (user['id'], user['id'])).fetchall()
 	conn.execute('update message set readed=1 where to_id=%d and readed=0' % user['id'])
 	messages = []
@@ -41,7 +41,7 @@ def all_messages():
 	if 'ol_user' not in session:
 		return redirect('/login?back=/msgbox/all')
 	user = session['ol_user']
-	conn = current_app.mysql_engine.connect()
+	conn = current_app.connect()
 	all_messages = conn.execute('select * from message where to_id=%d and (first_del_id is null or first_del_id<>%d)' % (user['id'], user['id'])).fetchall()
 	messages = []
 	for message in all_messages:
@@ -55,7 +55,7 @@ def send_messages():
 	if 'ol_user' not in session:
 		return redirect('/login?back=/msgbox/all')
 	user = session['ol_user']
-	conn = current_app.mysql_engine.connect()
+	conn = current_app.connect()
 	send_messages = conn.execute('select * from message where from_id=%d and (first_del_id is null or first_del_id<>%d)' % (user['id'], user['id'])).fetchall()
 	messages = []
 	for message in send_messages:
@@ -85,7 +85,7 @@ def send_message():
 	if to_user == user['name']:
 		return render_template(g.tperfix + 'msgsend.html', message = '不能给自己发信息！')
 	to_user, msg_content = filter_sql([to_user, msg_content])
-	conn = current_app.mysql_engine.connect()
+	conn = current_app.connect()
 	to_id_row = conn.execute("select id from user where name='%s'" % to_user).first()
 	if not to_id_row:
 		message = '接收者不存在！'
@@ -103,7 +103,7 @@ def msgdel(id):
 	if 'ol_user' not in session:
 		return redirect('/login')
 	user = session['ol_user']
-	conn = current_app.mysql_engine.connect()
+	conn = current_app.connect()
 	first_del_id = conn.execute('select first_del_id from message where id=%d and (from_id=%d or to_id=%d)' % (id, user['id'], user['id'])).first()[0]
 	if first_del_id and (first_del_id != user['id']):
 		conn.execute('delete from message where id=%d' % id)

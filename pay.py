@@ -1,9 +1,10 @@
 from flask import Blueprint, request, session, redirect, current_app, render_template, flash, g
-from tools import filter_sql
+from tools import filter_sql, transactional
 from services import svc_user, svc_topic
 bp = Blueprint('pay', __name__)
 
 @bp.route('/pay/<int:id>', methods = ['GET', 'POST'])
+@transactional
 def pay(id):
 	if 'ol_user' not in session:
 		return redirect('/login?back=/pay/%d' % id)

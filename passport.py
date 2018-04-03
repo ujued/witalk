@@ -34,7 +34,7 @@ def  login():
 	else:
 		id, password = filter_sql([id, password])
 		password = hashlib.md5(password.encode('utf-8')).hexdigest()
-		conn = current_app.mysql_engine.connect()
+		conn = current_app.connect()
 		if id.isdigit() :
 			user_from_db = conn.execute("select * from user where id=%d  and password='%s'" % (id, password)).first()
 		else:
@@ -64,7 +64,7 @@ def register():
 	elif email == None or len(email) < 8 or '@' not in email:
 		message = 'Email是否正确？'
 	else:
-		conn = current_app.mysql_engine.connect()
+		conn = current_app.connect()
 		username, email, password  = filter_sql([username, email, password])
 		password = hashlib.md5(password.encode('utf-8')).hexdigest()
 		user_from_db = conn.execute("select id from user where name='%s' or email='%s'" % (username, email)).first()
@@ -86,7 +86,7 @@ def register():
 
 @bp.route('/profile/<int:id>')
 def profile(id):
-	conn = current_app.mysql_engine.connect()
+	conn = current_app.connect()
 	user_row = conn.execute('select id, name, gender, age, email, register_date, avatar, points,signature, my_page, github_name, location from user where id=%d' % id).first()
 	if user_row == None:
 		conn.close()
@@ -114,30 +114,15 @@ def profile_name(username):
 	username = urllib.parse.unquote(username)
 	if "'" in username:
 		return render_template(g.tperfix + '404.html')
-	conn = current_app.mysql_engine.connect()
-	# user_row = conn.execute("select id, name, gender, age, email, register_date, avatar, points,signature, my_page, github_name, location from user where `name`='%s'" % username).first()
-	# if user_row == None:
-	# 	conn.close()
-	# 	return render_template('404.html')
-	# conn.close()
-	# online_usernames = current_app.online_usernames
-	# if user_row.name in online_usernames:
-	# 	user_online = True
-	# else:
-	# 	user_online = False
-	# return render_template(g.tperfix + 'profile.html', user = user_row, user_online = user_online)
+	conn = current_app.connect()
 	id = conn.execute("select id from user where name='%s'" % username).first()
-	if id :
-		conn.close()
-		return profile(id[0])
-	else:
-		conn.close()
-		return render_template(g.tperfix + '404.html')
+	if id : return profile(id[0])
+	else : return render_template(g.tperfix + '404.html')
 @bp.route('/home')
 def home():
 	if 'ol_user' not in session :
 		return redirect('/login')
-	conn = current_app.mysql_engine.connect()
+	conn = current_app.connect()
 	user = conn.execute('select id,avatar,points,name,age,gender,signature,my_page,email, location, github_name from user where id=%d' % session['ol_user']['id']).first()
 	conn.close()
 	return render_template(g.tperfix + 'home.html', user = user)
@@ -172,7 +157,7 @@ def chinfo():
 		sets += ", github_name='%s'" % github_name
 	if location != None and len(location)>0:
 		sets += ", location='%s'" % location
-	conn = current_app.mysql_engine.connect()
+	conn = current_app.connect()
 	count = conn.execute('update user set %s where id=%d' % (sets, session['ol_user']['id'])).rowcount
 	conn.close()
 	if count == 1:
@@ -192,7 +177,7 @@ def chpasswd():
 	oldpasswd, newpasswd, renewpasswd = filter_sql([oldpasswd, newpasswd, renewpasswd])
 	if oldpasswd != None and len(oldpasswd) >= 6 and newpasswd != None and renewpasswd != None and len(newpasswd) >= 6 and len(renewpasswd) >= 6:
 		if newpasswd == renewpasswd:
-			conn = current_app.mysql_engine.connect()
+			conn = current_app.connect()
 			uid = session['ol_user']['id']
 			if hashlib.md5(oldpasswd.encode('utf-8')).hexdigest() != conn.execute('select password from user where id=%d' % uid).first()[0]:
 				flash('修改失败，密码错误！')

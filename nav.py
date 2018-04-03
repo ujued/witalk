@@ -23,7 +23,7 @@ def onlines():
 
 @bp.route('/forums')
 def forums():
-	conn = current_app.mysql_engine.connect()
+	conn = current_app.connect()
 	forum_count = conn.execute('select count(id) from forum').first()[0]
 	topic_count = conn.execute('select count(id) from topic').first()[0]
 	trash_topic_count = conn.execute('select count(id) from topic_trash').first()[0]
@@ -60,7 +60,7 @@ def upload():
 	filename = str(time.time())
 	filename += ('.' + file.filename.split('.')[-1])
 	file.save("/opt/witalk/images/" + filename)
-	conn = current_app.mysql_engine.connect()
+	conn = current_app.connect()
 	conn.execute("insert into picture (name, author_id, size) value('%s', %d)" % (filename, session['ol_user']['id']))
 	conn.close()
 	return render_template(g.tperfix + 'upload.html', filename = filename)
@@ -69,7 +69,7 @@ def upload():
 def pictures():
 	if 'ol_user' not in session:
 		return redirect('/login?back=/pictures')
-	conn = current_app.mysql_engine.connect()
+	conn = current_app.connect()
 	pictures = conn.execute("select * from picture where author_id = %d" % session['ol_user']['id']).fetchall()
 	conn.close()
 	pictures.reverse()
