@@ -10,31 +10,53 @@
 		.btn-1:focus {border-color: #bbb;box-shadow: 0 0 6px #cecece inset;}
 		form {padding: 2px 15px;margin: 0px;}
 		form input {margin: 5px 0;}
-		form .tip {color:red;text-shadow:0 0 1px #ccc;line-height:32px;margin-left:-5px;}
-		.tips {margin: 0px;padding: 3px 10px;line-height: 22px;color: #454545;font-size: 12px;background: #efefef;}
-		.tips a {text-decoration: underline;}
+		form .tip {color:red;text-shadow:0 0 1px #ccc;line-height:32px;margin-left:-5px;clear:both;}
+		.tips {margin: 8px 10px;padding: 5px;line-height: 16px;color: #454545;font-size: 12px;background: #efefef;}
+		.tips a {text-decoration: underline;margin:0 2px;}
+		#pay-value {border:1px solid #eee;border-radius: 2px;padding: 3px 5px;width: 60px;margin-right: 10px;}
+		#should-pay {float: left;margin: 10px 5px 0px -5px;}
 	</style>
 {%endblock%}{%block body%}
 	<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/forums">分类</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/f/{{forum.id}}">{{forum.name}}</a>&nbsp;&nbsp;›&nbsp;&nbsp;主题创建</div>
 	{%if forum.id == 1%}
 	<div class="content">提问要用词准确，中心突出，这样同行才会更好的理解并给出问题的合理答案。</div>
 	{%endif%}
-	<form method="post">
+	<form class="post" action="/new/{{forum.id}}" method="post">
 		<div class="tip">{{message}}</div>
 		<input class="input-1" type="text" required="required" name="title" value="{{param.title}}" placeholder="标题" />
-		<textarea class="text-1" rows="12" placeholder="主题内容" name="content">{{param.content}}</textarea>
-		<p style="margin: 10px 0 0 -5px;width: 72px;display: inline-block;"><a href="/upload">上传图片</a></p>
+		<textarea class="text-1" rows="16" placeholder="主题内容" name="content">{{param.content}}</textarea>
+		<input id="should-pay" type="checkbox" name="should-pay" />
+		<label for="should-pay" style="display: inline-block;height: 36px;line-height: 36px;">付费主题</label>
+		<input id="pay-value" type="text" name="price" value="0" />
 		<input class="btn-1" type="submit" value="立即创建" />
 	</form>
-	<div class="line"></div>
 	<div class="tips">
 		支持Markdown语法<br />
 		标题能描述清楚的主题，内容请留空，不要加上RT、如题等类词语<br />
 		可能会被保持原意的、版面有删改的归档<a href="https://uoope.com">UOOPE技术栈</a>
 	</div>
-	<div class="content">
+	<div class="tips">
 		你发布的主题会优先展示在首页 "全部" 类别下，社区帖子默认按回复和发布时间综合排序，新发布和新回复的帖子均会排在各类前面。<br />
 		首页展示四个大类：编程、文艺、热议、交易，和一个综合类：全部。<br />
 		社区共同看重质量与信息量，希望发布的主题、答案等都会围绕这两点，当然这是需要智慧和技巧的。<br />我们在一起，未来一定是程序员的。
 	</div>
+{%endblock%}
+{%block script%}
+<script type="text/javascript">
+	var should_pay = document.getElementById('should-pay')
+	var pay_value = document.getElementById('pay-value')
+	should_pay.onchange = function(){
+		check_pay()
+	}
+	function check_pay(){
+		if(should_pay.checked){
+			pay_value.style.display = 'inline-block'
+			pay_value.value = 10
+		}else{
+			pay_value.style.display = 'none'
+			pay_value.value = 0
+		}
+	}
+	check_pay()
+</script>
 {%endblock%}

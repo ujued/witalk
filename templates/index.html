@@ -6,20 +6,22 @@
 <title>WITALK - 智慧·讨论 - 开发者社区</title>
 <style type="text/css">
 	.nologin {margin: 10px 10px 0 10px;color: green;}
-	.index-nav {padding: 12px 4px 8px 4px;border-bottom: 1px solid #efefef;line-height: 14px;}
-	.index-nav .forums {float: right;margin-top: -2px;padding:2px;height: 22px;width: 22px;}
-	.index-nav a {display: inline-block;padding: 6px 4px;color: #444;border-radius: 2px;margin: 0 2px;}
+	#getgift {display: inline-block;}
+	.index-nav {padding: 12px 4px 8px 4px;border-bottom: 1px solid #efefef;line-height: 28px;}
+	.index-nav a {display: inline-block;padding: 5px 4px;color: #444;border-radius: 2px;margin: 0 1px;line-height: 14px;height: 14px;}
 	.index-nav a:hover {background: #feeeee;}
 	.index-nav .nd-focus {background: #07111B;color: #fcfcfc;}
 	.index-nav .nd-focus:hover {background: #565656;color: #fcfcfc;}
+	.forums {float: right;margin: -37px 5px 0 0;padding:2px;height: 22px;width: 22px;}
+	.forums:hover {background: #feeeee;}
 	.switch{margin: 11px 10px -26px 0; text-align: right;}
 	.switch button {height: 18px;line-height: 18px;width: 38px;border:1px solid #cfcfcf;background: #efefef;box-shadow: 0 0 2px #cbcbcb;font-size: 10px;outline: none;color: #444;}
 	.switch button:first-child {border-radius: 9px 0 0 9px; border-right: none;}
 	.switch button:last-child {border-radius: 0 9px 9px 0;}
 	.switch .selected {}
+	.more {margin: 0 10px;padding: 6px 0 10px 0;}
 	.list {}
 	.list li {border-bottom: 1px solid #eee;padding: 8px 10px;line-height: 20px;}
-	.list li:last-child {border-bottom: none;}
 	.list li .avatar {float: left;padding: 2px;width: 22px;height: 22px;margin-top: -2px;}
 	.list li .avatar img {border-radius: 2px;}
 	.list li .topic {margin-left: 32px;}
@@ -31,29 +33,76 @@
 	.list li .last_answer_info {margin-left: 32px;color: #888;font-size: 12px;margin-top: 10px;}
 	.list li .forum {display: inline-block;padding: 0 5px;background: #feeeee;border-radius: 2px;color: #787878;}
 	.list li .forum:hover {background: #ceeeee;color: #222;}
-	.tip {padding: 10px;border-top: 1px solid #efefef;text-align: right;display: none;}
+	.tip {padding: 10px;border-top: 1px solid #efefef;text-align: right;}
 	.title {font-weight: bold;color: #c8c8c8;border-bottom: 1px solid #efefef;padding: 10px;}
+	.fcate, .flist {display: block;line-height: 16px;}
+	.fcate {color: #565656;text-align: right;border-bottom: 1px solid #efefef;margin: 0 10px;padding: 2px 0;}
+	.flist {margin: 10px;line-height: 32px;}
+	.flist a {margin-right: 4px;color: #787878;display: inline-block;line-height: 16px;height: 16px;}
+	.flist a:hover {text-decoration: underline;}
+	.flist a {border: 1px solid #efefef;padding: 4px 8px;border-radius: 12px;}
+	.flist a:hover {box-shadow: 0 0 8px #e0e0e0;border: 1px solid #cfcfcf;}
+	.glist {padding:5px 10px;}
+	.glist li{border-bottom:1px solid #efefef;padding:5px 0;clear: both;}
+	.glist li .normal-avatar {display:inline-block;border-radius:3px;float: left;margin: 0px 5px 0 0;}
+	.glist li a:hover {text-decoration:underline;color:#222;}
+	.glist li .view-count {background:#f8f8f8;border-radius:2px;padding:0 3px;margin:0 5px;border:1px solid #f0f0f0;height:16px;line-height:16px;font-size:12px;color:#bcbcbc;display:inline-block;}	
+	.glist li:last-child {border:none;}	
+	.glist li .profile-name {display: inline-block;padding: 0 10px;border-radius: 20px;background: #f8f8f8;}
+	.glist li .profile-name:focus {box-shadow: 0 0 3px #f0f0f0;}
+	.glist li .profile-name img {float: left;margin: 6px 3px 0 0;border-radius: 9px;}
+	.glist li .aeq {}
+	.glist li .points {display: inline-block;float: right;color: orange;}
+	.glist li .points img {float: right;margin: 0px 0 0 3px;}
+	.glist .xuhao {display: inline-block;height: 14px;width: 14px;line-height: 14px;text-align:center;background: #00ccff;float: left;margin: 3px 8px 0 0;color: #fff;font-size: 12px;}
+	.glist li:first-child .xuhao {background: #EE1111;}
+	.glist li:first-child + li .xuhao {background: #FF6600;}
+	.glist li:first-child + li + li .xuhao {background: #F7C709;}
 </style>
 {% endblock %}{% block body %}
-	{%if 'ol_user' not in session%}<div class="nologin">某技术领域有疑惑？<a href="/f/1">跟我走→</a></div>{%endif%}
-	<div class="index-nav">
-		<a class="forums" href="/forums"><img src="https://witalk.cc/r/witalk/rightarrow.png" height="22" /></a>
-		<a href="/f/1">问与答</a>
-		<a {{all_focus|safe}} href="/">全部</a>
-		<a {{programming_focus|safe}} href="/programming">编程</a>
-		<a {{art_focus|safe}} href="/art">文艺</a>
-		<a {{hot_focus|safe}} href="/hot">热议</a>
-		<a {{trade_focus|safe}} href="/trade">交易</a>
+	{%if 'ol_user' not in session%}
+	<div class="nologin">某技术领域有疑惑？<a href="/f/1">跟我走→</a></div>
+	{%elif not signined()%}
+	<div style="margin:10px 0 0 10px;">
+		<a id="getgift" href="javascript:signin();">领取今日奖励<img style="margin: -2px 2px 0 0;float: right;" src="https://witalk.cc/r/witalk/gift.icon.png" width="22" width="22" alt="gift"/></a>
 	</div>
+	{%endif%}
+	<div class="index-nav">
+		<a href="/f/1">问和答</a>
+		<a id="all" href="/">全部</a>
+		<a id="programming" href="/programming">编程</a>
+		<a id="art" href="/art">文艺</a>
+		<a id="trade" href="/trade">交易</a>
+		<a id="paid" href="/paid">付费</a>
+		<a id="good" href="/good">优选</a>
+		<a id="hot" href="/hot">热议</a>
+	</div>
+	<a class="forums" href="/forums"><img src="https://witalk.cc/r/witalk/rightarrow.png" height="22" /></a>
 	<div class="switch"><button id="default-btn">默认</button><button id="new-btn">最新</button></div>
 	<div id="list" class="list"></div>
-	<div class="list"><li><a id="get-more" href="javascript:;">数据加载中...</a></li></div>
-	<div id="tip" class="tip"><a href="#top">按最新排序查看更多主题↑</a></div>
+	<div class="more"><a id="get-more" href="javascript:;">数据加载中...</a></div>
+	<div class="tip"><a id="tip" href="#top"></a></div>
 	<div class="line"></div>
 	<div style="padding: 10px 0 0 0;">{%include 'forums-content.html'%}</div>
+	<div class="fcate">财富排行</div>
+	<div id="richlist" class="glist">
+		{%for user in richusers()%}
+			<li><a href="/profile/{{user.id}}"><img class="normal-avatar" src="{{user.avatar}}" width="18" height="18" /></a><a class="aeq" href="/profile/{{user.id}}">{{user.name}}</a><span class="points">{{user.points}}<img src="https://witalk.cc/r/witalk/points.icon.png" width="18" height="18" alt="Tb" /></span></li>
+		{%endfor%}
+	</div>
 {% endblock %}
 {% block script %}
 <script type="text/javascript">
+	var quickindex = document.getElementById('{{quickindex}}')
+	out_style = 'background: #07111B;color: #fcfcfc;'
+	over_style = 'background: #565656;color: #fcfcfc;'
+	quickindex.style = out_style
+	quickindex.onmouseover = function(){
+		this.style = over_style
+	}
+	quickindex.onmouseout = function(){
+		this.style = out_style
+	}
 	function ajax(url, fn){
 		var req = new XMLHttpRequest();
 		req.open('GET', url, true);
@@ -69,24 +118,22 @@
 	var get_more = document.getElementById('get-more');
 	var tip = document.getElementById('tip');
 	var pageid = 1;
-	var req_url = ''
+	var req_url = '';
+	var totalItemCount = 0;
 	var default_btn = document.getElementById('default-btn')
 	var new_btn = document.getElementById('new-btn')
-	function request_init(){
+
+	default_btn.onclick = function(){
 		list.innerHTML = '';
-		pageid = 1;
 		get_more.style = 'block';
 		get_more.innerHTML = '数据加载中...';
-	}
-	default_btn.onclick = function(){
-		request_init();
-		tip.style.display = 'block';
+		tip.innerHTML = '按最新排序查看更多主题↑';
 		this.style.cssText = 'color: #222;font-weight: bold;';
 		new_btn.style.cssText = '';
 		req_url = '/rtopics/{{quickindex}}';
 		ajax(req_url, function(txt){
 			if(txt == 'None' || txt == '[]'){
-				get_more.innerHTML = '暂无数据';
+				get_more.innerHTML = '暂无数据！';
 				get_more.onclick = null;
 				return;
 			}
@@ -103,14 +150,18 @@
 		});
 	}
 	new_btn.onclick = function(){
-		request_init();
-		tip.style.display = 'none';
+		list.innerHTML = '';
+		pageid = 1;
+		totalItemCount = 0;
+		get_more.style = 'block';
+		get_more.innerHTML = '数据加载中...';
+		tip.innerHTML = '回顶部↑';
 		this.style.cssText = 'color: #222;font-weight: bold;';
 		default_btn.style.cssText = '';
 		req_url = '/topics/0/' + (pageid++);
 		ajax(req_url, function(txt){
 			if(txt == 'None'){
-				get_more.innerHTML = '暂无数据';
+				get_more.innerHTML = '暂无数据！';
 				get_more.onclick = null;
 				return;
 			}
@@ -121,14 +172,15 @@
 				list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="22" /></a><div class="topic-info"><a class="forum" href="/f/'+ topic.forum.id +'">'+ topic.forum.name +'</a> · <a class="username" href="/profile/'+ topic.author.id+'">'+ topic.author.name +'</a> · '+ topic.post_date +'前</div><div class="topic"><a href="/t/' + topic.id + '">' + topic.title + '</a><a class="answer_count" href="/t/'+ topic.id +'">'+ topic.answer_count +'</a></div></li>\n';
 				count++;
 			}
+			totalItemCount += count;
 			if(count < 12) {
 				//get_more.style.display = 'none';
-				get_more.innerHTML = '没有了';
+				get_more.innerHTML = '-the end- '+ totalItemCount +'篇全部加载完毕！';
 			}
-			else get_more.innerHTML = '还有，继续浏览';
+			else get_more.innerHTML = '还有，继续浏览↓';
 		});
 		get_more.onclick = function(){
-			request_new_topics(pageid);
+			request_new_topics(pageid++);
 		}
 	}
 	default_btn.click();
@@ -137,7 +189,7 @@
 		get_more.innerHTML = '加载中...';
 		ajax('/topics/0/' + pageid, function(txt){
 			if(txt == 'None'){
-				get_more.innerHTML = '没有了';
+				get_more.innerHTML = '-the end- '+ totalItemCount +'篇全部加载完毕！';
 				get_more.onclick = null;
 				return;
 			}
@@ -145,15 +197,40 @@
 			count = 0
 			for(posi in topics){
 				topic = topics[posi];
-				list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="22" /></a><div class="topic-info"><a class="forum" href="/f/'+ topic.forum.id +'">'+ topic.forum.name +'</a> · <a class="username" href="/profile/'+ topic.author.id+'">'+ topic.author.name +'</a> · '+ topic.post_date +'前 · '+ topic.answer_count +'回复</div><a class="topic" href="/t/' + topic.id + '">' + topic.title + '</a></li>\n';
+				list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="22" /></a><div class="topic-info"><a class="forum" href="/f/'+ topic.forum.id +'">'+ topic.forum.name +'</a> · <a class="username" href="/profile/'+ topic.author.id+'">'+ topic.author.name +'</a> · '+ topic.post_date +'前</div><div class="topic"><a href="/t/' + topic.id + '">' + topic.title + '</a><a class="answer_count" href="/t/'+ topic.id +'">'+ topic.answer_count +'</a></div></li>\n';
 				count++;
 			}
+			totalItemCount += count;
 			if(count < 12) {
-				get_more.innerHTML = '没有了';
+				get_more.innerHTML = '-the end- '+ totalItemCount +'篇全部加载完毕！';
 				get_more.onclick = null;
 			}
-			else get_more.innerHTML = '还有，继续浏览';
+			else get_more.innerHTML = '还有，继续浏览↓';
 		});
 	}
+	function signin(){
+		var getgift = document.getElementById('getgift')
+		getgift.innerHTML += '正在签到...'
+		ajax('/signin', function(resp){
+			result = JSON.parse(resp)
+			if (result.status == 'success'){
+				getgift.innerHTML = '签到成功！获得' + result.points + 'T币.'
+				t1 = setTimeout(function(){
+					getgift.parentNode.style.display = 'none'
+					clearTimeout(t1)
+				}, 1500)
+			}else{
+				alert('error')
+				getgift.parentNode.style.display = 'none'
+			}
+		})
+	}
+	function rich_paihang(){
+		var richlist = document.getElementById('richlist').getElementsByTagName('li')
+		for (var i = richlist.length - 1; i >= 0; i--) {
+			richlist[i].innerHTML = '<span class="xuhao">'+ (i+1) +'</span>' + richlist[i].innerHTML
+		}
+	}
+	rich_paihang()
 </script>
 {% endblock %}

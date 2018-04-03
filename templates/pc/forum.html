@@ -13,13 +13,20 @@
 		.list li:last-child {border-bottom: none;}
 		.list li .answer_count {float: right;display: inline-block;background: #efefef;color: #454545;font-weight: bold;height: 16px;line-height: 16px;padding: 0px 8px;border-radius: 9px;margin: 2px 0px 0 0;font-size: 14px;}
 		.list li .answer_count:hover {background: #ccc;}
-		.list li .topic {margin-left: 28px;color: #444;}
+		.list li .topic {margin-left: 54px;color: #444;}
 		.list li .topic:hover {text-decoration: underline;color: #000;}
 		.list li .topic-info {margin: -6px 0 0 54px;color: #888;font-size: 12px;}
 		.list li .topic-info .answer-count {float: right;}
 	</style>
 {% endblock %}
-{% block body %}
+{%block right_top%}
+{%if forum.remark%}
+<div class="backcolor">
+<div class="gtitle">版块提示</div>
+<div class="gcontent">{{forum.remark|safe}}</div>
+</div>
+{%endif%}
+{%endblock%}{% block body %}
 	<div class="nav">
 		<a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/forums">分类</a>&nbsp;&nbsp;›&nbsp;&nbsp;{{forum.name}}
 		<div class="forum-info">
@@ -34,7 +41,7 @@
 			{%endif%}
 			<span>主题</span>&nbsp;<span>{{topic_count}}</span></div>
 	</div>
-	{% if session.ol_user%}<a class="post" href="/new/{{forum.id}}">创建新主题</a>{% endif%}
+	{% if session.ol_user%}<a class="post" href="/new/{{forum.id}}">创建新主题</a>{%else%}<a class="post" href="/login?back=/new/{{forum.id}}">登录并创建新主题</a>{% endif%}
 	<div id="list" class="list"></div>
 	<div class="list"><li><a id="get-more" style="text-align: right;" href="javascript:;">数据加载中...</a></li></div>
 {%endblock%}
@@ -53,7 +60,7 @@
 	var list = document.getElementById('list');
 	var get_more = document.getElementById('get-more');
 	var pageid = 1;
-	ajax('/topics/{{forum.id}}/' + (pageid++), function(txt){
+	ajax('/topics/{{forum.id}}/' + (pageid++) +'?count=18', function(txt){
 		if(txt == 'None'){
 			get_more.innerHTML = '暂无数据';
 			get_more.onclick = null;
@@ -63,15 +70,15 @@
 		count = 0;
 		for(posi in topics){
 			topic = topics[posi];
-			list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="44" /></a><a class="topic" href="/t/' + topic.id + '">' + topic.title + '</a><a class="answer_count" href="/t/'+ topic.id +'">'+ topic.answer_count +'</a><div class="topic-info"><a class="username" href="/profile/'+ topic.author.id +'">'+ topic.author.name +'</a> · '+ topic.post_date +'前 · '+ topic.view_count +' 次点击</span></div></li>\n';
+			list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="44" /></a><div class="topic"><a href="/t/' + topic.id + '">' + topic.title + '</a><a class="answer_count" href="/t/'+ topic.id +'">'+ topic.answer_count +'</a></div><div class="topic-info"><a class="username" href="/profile/'+ topic.author.id +'">'+ topic.author.name +'</a> · '+ topic.post_date +'前 · '+ topic.view_count +' 次点击</span></div></li>\n';
 			count++;
 		}
-		if(count < 12) get_more.style.display = 'none';
+		if(count < 18) get_more.style.display = 'none';
 		else get_more.innerHTML = '还有，继续浏览';
 	});
 	get_more.onclick = function(){
 		get_more.innerHTML = '加载中...';
-		ajax('/topics/{{forum.id}}/' + (pageid++), function(txt){
+		ajax('/topics/{{forum.id}}/' + (pageid++) + '?count=18', function(txt){
 			if(txt == 'None'){
 				get_more.innerHTML = '没有了';
 				get_more.onclick = null;
@@ -81,10 +88,10 @@
 			count = 0
 			for(posi in topics){
 				topic = topics[posi]
-				list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="44" /></a><a class="topic" href="/t/' + topic.id + '">' + topic.title + '</a><a class="answer_count" href="/t/'+ topic.id +'">'+ topic.answer_count +'</a><div class="topic-info"><a class="username" href="/profile/'+ topic.author.id +'">'+ topic.author.name +'</a> · '+ topic.post_date +'前 · '+ topic.view_count +' 次点击</span></div></li>\n';
+				list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="44" /></a><div class="topic"><a href="/t/' + topic.id + '">' + topic.title + '</a><a class="answer_count" href="/t/'+ topic.id +'">'+ topic.answer_count +'</a></div><div class="topic-info"><a class="username" href="/profile/'+ topic.author.id +'">'+ topic.author.name +'</a> · '+ topic.post_date +'前 · '+ topic.view_count +' 次点击</span></div></li>\n';
 				count++;
 			}
-			if(count < 12) get_more.innerHTML = '没有了';
+			if(count < 18) get_more.innerHTML = '没有了';
 			else get_more.innerHTML = '还有，继续浏览';
 		});
 	}

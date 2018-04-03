@@ -8,42 +8,91 @@
 	<link rel="bookmark" href="https://witalk.cc/r/witalk/favicon.ico" />
 	<style type="text/css">
 		* {padding: 0;margin: 0;list-style: none;}
-		body {font-size: 14px;font-family: "Raleway","Microsoft Jhenghei","Microsoft Yahei","Helvetica Neue",HelveticaNeue,Arial,sans-serif;line-height: 28px;}
+		body {background-image:url(https://cdn.v2ex.com/assets/bgs/circuit.png);background-repeat:repeat-x;font-size: 14px;font-family: "Raleway","Microsoft Jhenghei","Microsoft Yahei","Helvetica Neue",HelveticaNeue,Arial,sans-serif;line-height: 28px;}
 		a {text-decoration: none;color: #787878;}
-		.username {font-weight: bold;color: #787878;margin: 0 3px;}
-		.nav {margin: 10px;line-height: 18px;}
-		.nav a {color: #888;}
-		.nav a:hover {color: #666;text-decoration: underline;}
-		.header {height: 22px;padding: 10px 0;border-bottom: 1px solid #e0e0e0;box-shadow: 0 0 10px #e0e0e0;}
-		.header .inner {width: 80%;margin: 0 auto;line-height: 26px;font-size: 14px;}
+		button {font-weight:normal;}
+		li {word-wrap: break-word;}
+		.currency {display: inline-block;padding: 0 5px;}
+		.currency img {float: right;margin: 6px 0 0 3px;}
+		.button {background-image: url("https://www.v2ex.com/static/img/bg_blended_light.png");padding: 4px 8px 4px 8px;border: 1px solid rgba(80,80,90, 0.2);border-bottom-color: rgba(80,80,90, 0.35);border-radius: 3px;font-size: 14px;outline: none;font-weight:normal;}
+		.button {background-color: #fff;color: #333;text-shadow: 0px 1px 0px #fff;text-decoration: none;box-shadow: 0px 1px 0px rgba(66, 66, 77, 0.1);}
+		.button:hover{background-color: #eee;}
+		.header {background:#fff;height: 22px;padding: 10px 0;border-bottom: 1px solid #e0e0e0;box-shadow: 0 0 10px #e0e0e0;}
+		.header .inner {width: 80%;margin: 0 auto;line-height: 26px;font-size: 14px;position: relative;}
 		.header .inner .logo {display: inline-block;height: 26px;padding: 2px;margin-top: -5px;}
 		.header .inner .menu {float: right;}
 		.header .inner .menu a {margin-left: 10px;}
+		.header .inner form {position:absolute;top:-3px;left:130px;display:inline-block;}
+		.header .inner #search-box {border:1px solid #ececec;border-radius:16px;width:150px;height:26px;line-height:26px;padding:0 20px;color:#bbblklk;font-size:16px;}
+		.header .inner #search-box:focus {color:#232323;box-shadow:0 0 3px #efefef;width:320px;}
+		.username {font-weight: bold;color: #787878;margin: 0 3px;}
+		.nav {margin: 8px 10px 10px 10px;line-height: 18px;color: #000;}
+		.nav a {color: #888;}
+		.nav a:hover {color: #666;text-decoration: underline;}
+		
 		.main {width: 80%;margin: 0 auto;}
+		.line {height: 1px;background: #cbcbcb;clear: both;}
 		.footer {border-top: 1px solid #e0e0e0;clear: both;line-height: 18px;}
 		.footer .inner {padding: 15px;color: #888;width: 80%;margin: 0 auto;}
 		.online-area {float: right;font-size: 12px;color: #bcbcbc;margin-top: 2px;}
 		.online-flag {float: left;width: 6px;height: 6px;border-radius: 5px;background: green;margin: 6px 3px 0 0;}
-		.flashes {margin: 6px 10px 0 10px;color: red;text-shadow: 0 0 1px #eee;}
-		.left-box {width: 66%;}
-		.right-box {width: 30%;float: right;}
-		.nd_list a {display: inline-block;border: 1px solid #ececec;height: 20px;padding: 2px 8px;border-radius: 12px;box-shadow: 0 0 8px #efefef inset;}
-		.nd_list a:hover {box-shadow: 0 0 8px #efefef;}
-		.n_title {border-bottom: 1px solid #ececec;padding: 6px 2px;}
-		.n_content {color: #454545;line-height: 28px;padding: 5px 2px;}
+		.left-box {width: 71%;float: left;background:#fff;border-radius:2px;box-shadow:0px 2px 3px rgba(0, 0, 0, 0.1);}
+		.left-box .flashes {margin: 0 0 0px 0;color: #454545;text-shadow: 0 0 1px #eee;background:#fff;border-left:4px solid #efefef;padding:0 5px;}
+		.right-box {width: 26%;float: right;padding:0;}
+		
+		.gtitle {border-bottom: 1px solid #ececec;padding: 5px 10px;}
+		.gcontent {color: #454545;line-height: 28px;padding: 5px 10px;}
+		.glist {padding:5px 10px;}
+		.glist li{border-bottom:1px solid #efefef;padding:3px 0;}
+		.glist li .normal-avatar {display:inline-block;margin-right:3px;border-radius:3px;float: left;margin: 6px 5px 0 0;}
+		.glist li a:hover {text-decoration:underline;color:#222;}
+		.glist li .view-count {background:#f8f8f8;border-radius:2px;padding:0 3px;margin:0 5px;border:1px solid #f0f0f0;height:16px;line-height:16px;font-size:12px;color:#bcbcbc;display:inline-block;}	
+		.glist li:last-child {border:none;}	
+		.glist li .profile-name {display: inline-block;padding: 0 10px;border-radius: 20px;background: #f8f8f8;}
+		.glist li .profile-name:focus {box-shadow: 0 0 3px #f0f0f0;}
+		.glist li .profile-name img {float: left;margin: 6px 3px 0 0;border-radius: 9px;}
+		.glist li .aeq {}
+		.glist li .points {display: inline-block;float: right;color: orange;}
+		.glist li .points img {float: right;margin: 5px 0 0 3px;}
+		.glist .xuhao {display: inline-block;height: 14px;width: 14px;line-height: 14px;text-align:center;background: #00ccff;float: left;margin: 9px 8px 0 0;color: #fff;font-size: 12px;}
+		.glist li:first-child .xuhao {background: #EE1111;}
+		.glist li:first-child + li .xuhao {background: #FF6600;}
+		.glist li:first-child + li + li .xuhao {background: #F7C709;}
+		.backcolor {background: #fff;padding-bottom: 10px;margin:-10px 0 26px 0;color: #000;border-radius: 2px;box-shadow:0px 1px 4px rgba(0, 0, 0, 0.1);}
+		.guserinfo, .gtologin {height: 120px;margin: 10px 0 20px 0;}
+		.guserinfo .gavatar {width: 50px;height: 50px;border-radius: 30px;background: #fff;padding: 5px;float: left;}
+		.guserinfo .guname {margin-left: 70px;font-weight: bold;}
+		.gusignature {margin-left: 70px;color: #999;font-size:12px;}
+		#uremark {padding: 5px;min-height: 60px;}
+		#uremark:hover {background: #fafafa;cursor: pointer;}
+		#t {padding: 6px 10px;}
+		.gtologin {height: 66px;padding:10px;}
+
+		.fcate, .flist {line-height: 32px;}
+		.fcate{border-bottom: 1px solid #ececec;padding: 3px 10px;}
+		.flist {padding: 10px 0 0 10px;}
+		.flist a {margin-right: 6px;color: #565656;display: inline-block;line-height: 18px;height: 18px;font-size:12px;}
+		.flist a:hover {text-decoration: underline;}
+		.flist a {display: inline-block;border: 1px solid #f8f8f8;padding: 2px 8px;border-radius: 11px;background: #f8f8f8;}
+		.flist a:hover {border-color: #f0f0f0;}
+			
 	</style>
 	{% endblock %}
-	<title>{% block title %}{% endblock%}</title>
 </head>
 <body>
 	<div class="header">
 		<div class="inner">
 			<a class="logo" href="/"><img src="https://witalk.cc/r/witalk/witalk.png" height="26" /></a>
+			<form id="search" action="/s" method="get">
+				<input id="search-box" type="text" name="wd" placeholder="Search" value="{{word}}" />
+				<input type="submit" hidden="hidden" value="" />
+			</form>
 			<div class="menu">
 				{%if 'ol_user' not in session %}
 				<a href="/login">登录</a>
 				<a href="/register">注册</a>
 				{%else%}
+				{% if msgcount() > 0 %}<span style="display: inline-block;background: #ED0A3F;width: 8px;height: 8px;border-radius: 4px;position: absolute;top:2px;right: 80px;"></span>{%endif%}
 				<a href="/">首页</a>
 				<a href="/msgbox">信箱</a>
 				<a href="/home">{{session.ol_user.name}}</a>
@@ -54,38 +103,147 @@
 	</div>
 	<div style="height: 12px;"></div>
 	<div class="main">
-	{% with messages = get_flashed_messages() %}
-		{% if messages %}
-			<ul class="flashes">
-			{% for message in messages %}
-				<li>{{ message }}</li>
-			{% endfor %}
-			</ul>
-		{% endif %}
-	{% endwith %}
-	<div class="right-box">
-	{%block right%}
-	{%endblock%}
+		<div class="left-box">
+			{% with messages = get_flashed_messages() %}
+				{% if messages %}
+					<ul class="flashes" onclick="closeFlashes(this);">
+					{% for message in messages %}
+						<li>{{ message }}</li>
+					{% endfor %}
+					</ul>
+				{% endif %}
+			{% endwith %}
+			{% block body %}
+			{% endblock%}
+		</div>
+		<div class="right-box">
+			<div class="backcolor">
+			{%if session.ol_user%}
+			<div class="guserinfo">
+				<div id="uremark" onclick="javascript:window.location.href='/home';">
+					<img class="gavatar" src="{{session.ol_user.avatar}}" width="50" height="50" alt="{{session.ol_user.name}}" /><div class="guname">{{session.ol_user.name}}</div>
+					<div class="gusignature">{{session.ol_user.signature}}</div>
+				</div>
+				<div id="t">
+					T币余额:<span class="currency"><span id="ponits-value">{{points()}}</span><img src="https://witalk.cc/r/witalk/points.icon.png" width="18" height="18" /></span>
+				</div>
+				{%if not signined()%}
+				<div style="padding: 0 0 0 10px;">
+					<a id="getgift" style="display: inline-block;" href="javascript:signin();"><img style="margin: 3px 0 0 2px;float: right;" src="https://witalk.cc/r/witalk/gift.icon.png" width="22" width="22" alt="gift"/>领取今日奖励 </a>
+				</div>
+				{%endif%}
+			</div>
+			{%else%}
+			<div class="gtologin">
+				某技术领域有疑惑？<a href="/f/1">跟我走→</a><br />
+				<button  class="button" style="margin: 6px auto;padding:4px 10px;" onclick="javascript:window.location.href='/register?back=' + window.location.pathname;">现在注册</button>
+				<br />已注册用户，<a href="javascript:window.location.href='/login?back=' + window.location.pathname;">去登录</a>，发现更多优质内容
+			</div>
+			{%endif%}
+			</div>
+			{%block right_top%}
+			{%endblock%}
+			{%if session.ol_user%}
+			{%set ownfs = collectforums()%}
+			{%set interestedts = interestedtopics()%}
+			<div class="backcolor">
+				<div class="gtitle">我的兴趣版块</div>
+				<div class="flist">
+					{%if not ownfs%}去找些感兴趣的版块收藏吧！系统会根据兴趣精准推荐你感兴趣的优质内容哦。{%endif%}
+					{%for forum in ownfs%}
+					<a href="/f/{{forum.id}}">{{forum.name}}</a>
+					{%endfor%}
+				</div>
+			</div>
+			{%endif%}
+			{%block right_center%}
+			{%endblock%}
+			{%if interestedts%}
+			<div class="backcolor">
+				<div class="gtitle">推荐阅读</div>
+				<div class="glist">
+					{%for topic in interestedts%}
+					<li><a href="/profile/{{topic.author_id}}"><img class="normal-avatar" src="{{topic.author_avatar}}" width="18" height="18" alt="{{topic.author_name}}"/></a><a href="/t/{{topic.id}}">{{topic.title}}</a><span class="view-count">{{topic.view_count}}次浏览</span></li>
+					{%endfor%}
+				</div>
+			</div>
+			{%endif%}
+			<div class="backcolor">
+				<div class="gtitle">财富排行</div>
+				<div id="richlist" class="glist">
+					{%for user in richusers()%}
+						<li><a href="/profile/{{user.id}}"><img class="normal-avatar" src="{{user.avatar}}" width="18" height="18" /></a><a class="aeq" href="/profile/{{user.id}}">{{user.name}}</a><span class="points">{{user.points}}<img src="https://witalk.cc/r/witalk/points.icon.png" width="18" height="18" alt="Tb" /></span></li>
+					{%endfor%}
+				</div>
+			</div>
+			{%block right_bottom%}
+			{%endblock%}
+		</div>
 	</div>
-	<div class="left-box">
-	{% block body %}
-	{% endblock%}
-	</div>
-	</div>
+	<div style="clear:both;height:30px;"></div>
 	<div class="footer">
 		<div class="inner">
 			&copy;&nbsp;&nbsp;2018&nbsp;&nbsp;WITALK.CC&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;<a href="/privacy">隐私</a>&nbsp;&nbsp;<a href="/thanks">鸣谢</a>&nbsp;&nbsp;<a href="/about">关于</a>
-			<span class="online-area"><span class="online-flag"></span><a href="/onlines"><span style="font-weight: bold;">{{onlines()|length}}</span>在线</span></a>
 		</div>
 	</div>
-</body>
 <script type="text/javascript">
+	function request(url, fn){
+		var req = new XMLHttpRequest();
+		req.open('GET', url, true);
+		req.onreadystatechange = function(){
+			if (req.readyState == 4 && req.status == 200 ) { // readyState == 4说明请求已完成
+              		fn.call(this, req.responseText);  //从服务器获得数据
+       		};
+		};
+		req.send();
+	}
 	function logout(){
 		if(confirm('确定登出？')){
 			window.location.href = '/logout?back=/'
 		}
 	}
+	function signin(){
+		var getgift = document.getElementById('getgift')
+		getgift.innerHTML += '正在签到...'
+		request('/signin', function(resp){
+			result = JSON.parse(resp)
+			if (result.status == 'success'){
+				var ponits_value = document.getElementById('ponits-value')
+				ponits_value.innerHTML = ponits_value.innerHTML + ' + ' + result.points
+				ponits_value.style.fontSize = '20px'
+				getgift.innerHTML = '签到成功！'
+				t1 = setTimeout(function(){
+					ponits_value.innerHTML = parseInt(ponits_value.innerHTML) + parseInt(result.points)
+					getgift.innerHTML = ''
+					ponits_value.style.fontSize = '14px'
+					clearTimeout(t1)
+				}, 1500)
+			}else{
+				alert('error')
+			}
+		})
+	}
+	function closeFlashes(obj){
+		var ov = 1
+		interval = setInterval(function(){
+			ov = ov - 0.1
+			obj.style.opacity = ov
+			if(ov <= 0.6) ov -= 0.2
+			if(ov < 0) {
+				clearInterval(interval)
+				obj.style.display = 'none'
+			}
+		}, 100)
+	}
+	function rich_paihang(){
+		var richlist = document.getElementById('richlist').getElementsByTagName('li')
+		for (var i = richlist.length - 1; i >= 0; i--) {
+			richlist[i].innerHTML = '<span class="xuhao">'+ (i+1) +'</span>' + richlist[i].innerHTML
+		}
+	}
+	rich_paihang()
 </script>
 {% block script %}
 {% endblock %}
+</body>
 </html>

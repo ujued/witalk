@@ -12,7 +12,7 @@
 	form .tip {color:red;text-shadow:0 0 1px #ccc;line-height:32px;margin-left:-3px;}
 </style>
 {%endblock%}{%block body%}
-<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/home">个人中心</a>&nbsp;&nbsp;›&nbsp;&nbsp;图片上传</div>
+<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/home">个人中心</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/pictures">图库</a>&nbsp;&nbsp;›&nbsp;&nbsp;图片上传</div>
 <form class="upload" action="/upload" method="post" enctype="multipart/form-data">
 	{%if filename %}
 	<div class="tip">上传成功!</div>
@@ -21,7 +21,7 @@
 	Markdown:
 	<input class="input-1" type="text" value="![{{filename}}](https://witalk.cc/img/{{filename}})" /><br /><br />
 	{%endif%}
-	<input id="image" class="input-1" accept="image/*" type="file" name="image" />
+	<input id="image" class="input-1" accept="image/*" type="file" name="image" required="required" />
 	<input id="upload-btn" class="btn-1" type="submit" value="立即上传" />
 	<p style="margin: 10px 0 0 -5px;">图片分享请用Markdown.</p>
 </form>

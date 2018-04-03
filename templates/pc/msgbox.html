@@ -2,14 +2,14 @@
 {%block head%}{{super()}}
 <title>我的信箱</title>
 <style type="text/css">
-	form .input-1 {border: 1px solid #cbcbcb;padding: 5px;width: 100%;margin-left: -5px;}
-	form textarea {width: 100%;max-width: 100%;display: block;padding: 5px;border-radius: 2px;margin-left: -5px;border: 1px solid #cbcbcb;}
-	form textarea:focus {border-color: #bbb;box-shadow: 0 0 3px #cecece;}
+	.sendform .input-1 {border: 1px solid #cbcbcb;padding: 5px;width: 100%;margin-left: -5px;}
+	.sendform textarea {width: 100%;max-width: 100%;display: block;padding: 5px;border-radius: 2px;margin-left: -5px;border: 1px solid #cbcbcb;}
+	.sendform textarea:focus {border-color: #bbb;box-shadow: 0 0 3px #cecece;}
 	.btn-1 {border: 1px solid #cbcbcb;border-radius: 2px;background: #fff;padding: 3px 15px;box-shadow: 0 0 2px #efefef inset;float: right;margin: 8px -6px 6px 0;} 
 	.btn-1:focus {border-color: #bbb;box-shadow: 0 0 6px #cecece inset;}
-	form {padding: 2px 15px;margin: 0px;}
-	form input {margin: 5px 0;}
-	form .tip {color:red;text-shadow:0 0 1px #ccc;line-height:32px;margin-left:-5px;}
+	.sendform {padding: 2px 15px;margin: 0px;}
+	.sendform input {margin: 5px 0;}
+	.sendform .tip {color:red;text-shadow:0 0 1px #ccc;line-height:32px;margin-left:-5px;}
 	.list {margin: 0 10px;}
 	.list li {line-height: 28px;border-bottom: 1px solid #efefef;padding: 2px 0 12px 0;}
 	.list li:last-child {border-bottom: none;}
@@ -40,7 +40,7 @@
 </ul>
 <div class="line"></div>
 <br />
-<form action="/msgsend" method="post">
+<form class="sendform" action="/msgsend" method="post">
 	<input id="msgto" class="input-1" type="text" name="username"  placeholder="To" required="required" />
 	<textarea id="msgc" name="content" placeholder="信息内容" required="required"></textarea>
 	<div style="display: inline-block;float: left;margin-top: 8px;">

@@ -16,7 +16,7 @@
 	</style>
 {%endblock%}{%block body%}
 	<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;密码找回</div>
-	<form method="post">
+	<form method="post" action="/backpasswd">
 		<p class="tip">{{message}}</p>
 		<span class="light">Email:</span>
 		<input class="input-1" type="email" name="email" required="required" placeholder="注册时使用的Email" />

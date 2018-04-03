@@ -1,5 +1,5 @@
 import datetime, hashlib, re
-from flask import session
+from flask import session, current_app, request
 def filter_sql(list):
 	for x in range(0,len(list)):
 		list[x] = list[x].replace("'", "''").replace('%', '__bfh_')
@@ -62,37 +62,34 @@ def get_post_device(user_agent):
 	return device
 
 def support_at(content):
-	users = re.findall('@[^ @\r\n\t,，]+ ', content)
+	users = re.findall('@[^ @\r\n\t,，(;=<>]+ ', content)
 	users = list(set(users))
 	for user in users:
 		content = content.replace(user, '<a href="/profile/%s">%s</a>' % (user[1:][:-1], user))
-	content = content.replace(';\r\n', ';<br />').replace(';\n', ';<br />').replace('\n    ', '<br />&nbsp;&nbsp;&nbsp;&nbsp;').replace('    ', '&nbsp;&nbsp;&nbsp;&nbsp;')
+	content = content.replace(';\r\n', ';<br />').replace(';\n', ';<br />').replace('\n    ', '<br />&nbsp;&nbsp;&nbsp;&nbsp;').replace('    ', '&nbsp;&nbsp;&nbsp;&nbsp;').replace('</script>', '&lt;/script&gt;').replace('<script', '&lt;script')
 	return content
 
-def from_topic_notify_user(content, title, id, conn):
-	users = re.findall('@[^ @\r\n\t,]+ ', content)
+def at_notify(content, conn, message):
+	users = re.findall('@[^ @\r\n\t,，(;=<>]+ ', content)
 	users = list(set(users))
 	for user_raw in users:
 		user = user_raw[1:-1]
 		if user == session['ol_user']['name']:
 			continue
 		uid = conn.execute("select id from user where name='%s'" % user).first()[0]
-		conn.execute("insert into message(content, from_id, to_id) values('[%(user)s](/profile/%(user)s)在发布主题[%(title)s](/t/%(id)d)时提到了你.', 1, %(uid)d)" % {'user':session['ol_user']['name'], 'title':title, 'id':id, 'uid':uid})
+		conn.execute("insert into message(content, from_id, to_id) values('%s', 1, %d)" % (message, uid))
+def new_topic_notify(content, title, id, conn):
+	username = session['ol_user']['name']
+	at_notify(content, conn, '[%s](/profile/%s)在发布主题[%s](/t/%d)时提到了你.' % (username, username, title, id))
 
-def from_answer_notify_user(content, title, id, conn):
-	users = re.findall('@[^ @\r\n\t,]+ ', content)
-	users = list(set(users))
-	for user_raw in users:
-		user = user_raw[1:-1]
-		if user == session['ol_user']['name']:
-			continue
-		uid = conn.execute("select id from user where name='%s'" % user).first()[0]
-		conn.execute("insert into message(content, from_id, to_id) values('[%(user)s](/profile/%(user)s)在主题[%(title)s](/t/%(id)d)的答案中提到了你.', 1, %(uid)d)" % {'user':session['ol_user']['name'], 'title':title, 'id':id, 'uid':uid})
+def new_answer_notify(content, title, id, conn):
+	username = session['ol_user']['name']
+	at_notify(content, conn, '[%s](/profile/%s)在主题[%s](/t/%d)的答案中提到了你.' % (username, username, title, id))
 
-def update_online_users(session, app, request, username = None):
-	online_usernames = app.online_usernames
-	online_users = app.online_users
-	online_user_updates_queue = app.online_user_updates_queue
+def update_online_users():
+	online_usernames = current_app.online_usernames
+	online_users = current_app.online_users
+	online_user_updates_queue = current_app.online_user_updates_queue
 	def create_user(name, last_time):
 		return {
 			'name':name,
@@ -101,11 +98,12 @@ def update_online_users(session, app, request, username = None):
 	if 'ol_user' in session:
 		username = session['ol_user']['name']
 	else:
-		if not username:
-			username = request.cookies.get(app.session_cookie_name)
-		if username:
-			username = hashlib.md5(username.encode('utf-8')).hexdigest()
-			username = username + ' • ' + get_post_device(request.headers.get('User_Agent')) + '用户'
+		if hasattr(request, 'username'):
+			username = request.username
+		else:
+			username = request.cookies.get(current_app.session_cookie_name)
+		username = hashlib.md5(username.encode('utf-8')).hexdigest() +  ' • ' + get_post_device(request.headers.get('User_Agent')) + '用户'
+			
 	if username not in online_usernames:
 		online_usernames.append(username)
 		online_users.append(create_user(username, datetime.datetime.now()))
@@ -170,3 +168,54 @@ def check_topic_append(topic_id, conn):
 		return '<a href="/append/%d">续贴</a>' % topic_id
 	else:
 		return ''
+
+def ensure_recent_queue_when_remove(topic_id):
+	if topic_id in current_app.all_recent_topic_ids:
+		current_app.all_recent_topic_ids.remove(topic_id)
+	if topic_id in current_app.art_recent_topic_ids:
+		current_app.art_recent_topic_ids.remove(topic_id)
+	if topic_id in current_app.trade_recent_topic_ids:
+		current_app.trade_recent_topic_ids.remove(topic_id)
+	if topic_id in current_app.programming_recent_topic_ids:
+		current_app.programming_recent_topic_ids.remove(topic_id)
+
+def ensure_recent_queue_when_post(topic_id, forumid_str):
+	if len(current_app.all_recent_topic_ids) == 36:
+		current_app.all_recent_topic_ids.pop()
+	current_app.all_recent_topic_ids.insert(0, topic_id)
+	forumid = forumid_str
+	if forumid in current_app.programming_forum_ids.split(','):
+		if len(current_app.programming_recent_topic_ids) == 36:
+			current_app.programming_recent_topic_ids.pop()
+		current_app.programming_recent_topic_ids.insert(0, topic_id)
+	if forumid in current_app.art_forum_ids.split(','):
+		if len(current_app.art_recent_topic_ids) == 36:
+			current_app.art_recent_topic_ids.pop()
+		current_app.art_recent_topic_ids.insert(0, topic_id)
+	if forumid in current_app.trade_forum_ids.split(','):
+		if len(current_app.trade_recent_topic_ids) == 36:
+			current_app.trade_recent_topic_ids.pop()
+		current_app.trade_recent_topic_ids.insert(0, topic_id)
+def ensure_recent_queue_when_reply(topic_id, forumid_str):
+	all_ids = current_app.all_recent_topic_ids
+	programming_forumids = current_app.programming_forum_ids.split(',')
+	programming_ids = current_app.programming_recent_topic_ids
+	art_forumids = current_app.art_forum_ids.split(',')
+	art_ids = current_app.art_recent_topic_ids
+	trade_forumids = current_app.trade_forum_ids.split(',')
+	trade_ids = current_app.trade_recent_topic_ids
+	if topic_id in all_ids:
+		all_ids.remove(topic_id)
+	all_ids.insert(0, topic_id)
+	if forumid_str in programming_forumids:
+		if topic_id in programming_ids:
+			programming_ids.remove(topic_id)
+		programming_ids.insert(0, topic_id)
+	if forumid_str in art_forumids:
+		if topic_id in art_ids:
+			art_ids.remove(topic_id)
+		art_ids.insert(0, topic_id)
+	if forumid_str in trade_forumids:
+		if topic_id in trade_ids:
+			trade_ids.remove(topic_id)
+		trade_ids.insert(0, topic_id)

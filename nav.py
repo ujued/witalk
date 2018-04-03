@@ -1,5 +1,5 @@
 import time
-from flask import Blueprint, request, render_template, redirect, session, current_app, make_response, Response, g
+from flask import Blueprint, request, render_template, redirect, session, current_app, make_response, Response, g, jsonify
 from urllib import request as url_request
 from urllib import error
 
@@ -55,13 +55,13 @@ def upload():
 	if 'ol_user' not in session:
 		return redirect('/login?back=/upload')
 	if request.method == 'GET':
-		return render_template('upload.html')
+		return render_template(g.tperfix + 'upload.html')
 	file = request.files['image'];
 	filename = str(time.time())
 	filename += ('.' + file.filename.split('.')[-1])
 	file.save("/opt/witalk/images/" + filename)
 	conn = current_app.mysql_engine.connect()
-	conn.execute("insert into picture (name, author_id) value('%s', %d)" % (filename, session['ol_user']['id']))
+	conn.execute("insert into picture (name, author_id, size) value('%s', %d)" % (filename, session['ol_user']['id']))
 	conn.close()
 	return render_template(g.tperfix + 'upload.html', filename = filename)
 
@@ -74,3 +74,13 @@ def pictures():
 	conn.close()
 	pictures.reverse()
 	return render_template(g.tperfix + 'pictures.html', pictures = pictures)
+
+@bp.route('/signin')
+def signin():
+	from services import svc_user
+	result = svc_user.signin()
+	if result == -1:
+		return jsonify({'status':'offline'})
+	if result == 0:
+		return jsonify({'status':'repeat sign'})
+	return jsonify({'status':'success', 'points':result})

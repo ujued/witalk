@@ -20,7 +20,7 @@
 		<li>称呼:<span style="font-weight: bold;">{{user.name}}</span> ({{user.age}}岁, {% if user.gender == 'M'%}男生{%else%}女生{% endif %})</li>
 		<li>UID:{{user.id}}</li>
 		<li>Email:{{user.email}}</li>
-		<li>积分:{{user.points}}分</li>
+		<li>{{currency()}}余额:<div class="currency">{{user.points}}<img src="https://witalk.cc/r/witalk/points.icon.png" width="18" height="18" alt="Tb" /></div></li>
 	</ul>
 	<form id="edit_area" class="edit-info" action="/chinfo" method="post">
 		<input type="text" name="avatar" placeholder="头像" value="{{user.avatar}}" />

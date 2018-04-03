@@ -1,0 +1,15 @@
+{%extends 'pc/template.html'%}
+{%block head%}{{super()}}
+<title>请输入密码</title>
+<style type="text/css">
+	.payform {width: 80%;margin: 20px auto;}
+	.payform input[type=password] {border: 1px solid #eee;height: 32px;line-height: 32px;font-size: 18px;padding: 2px 20px;border-radius: 3px;margin: 10px 0 10px -20px;width: 100%;}
+
+</style>
+{%endblock%}{%block body%}
+	<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;请输入密码</div>
+	<form class="payform" method="post">
+		<input type="password" name="password" placeholder="请输入密码" />
+		<input class="button" type="submit" value="完成支付" />
+	</form>
+{%endblock%}

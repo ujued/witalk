@@ -22,6 +22,8 @@ def create_user_dict(row):
 @bp.route('/login', methods = ['GET', 'POST'])
 def  login():
 	if request.method == 'GET':
+		if 'ol_user' in session:
+			return redirect('/home')
 		return render_template(g.tperfix + 'login.html')
 	id = request.form['id']
 	password = request.form['password']
@@ -91,13 +93,14 @@ def profile(id):
 		return render_template('404.html')
 	auth_info = conn.execute('select forum_id from administrator where author_id=%d' % id).first()
 	conn.close()
+	auth = {'name':'用户', 'forum_id':-1}
 	if auth_info :
 		if auth_info[0] == 0:
-			auth = '管理'
+			auth['name'] = '管理'
+			auth['forum_id'] = 0
 		else:
-			auth = '版主'
-	else:
-		auth = '用户'
+			auth['name'] = '版主'
+			auth['forum_id'] = auth_info[0]
 	online_usernames = current_app.online_usernames
 	if user_row.name in online_usernames:
 		user_online = True

@@ -1,21 +1,26 @@
 {%extends 'template.html'%}
 {%block head%}{{super()}}
-<meta name="keywords" content="{{forum.name}}" />
+<meta name="keywords" content="{{topic.forum_name}}" />
 <meta name="description" content="{{topic.title}}" />
 	<title>{{topic.title}}</title>
+	<link rel="stylesheet" href="https://witalk.cc/r/markdown.css">
 	<style type="text/css">
 		#avatar {display: inline-block;width: 38px;height: 38px;float: right;margin-right: 0px;padding: 2px;}
 		#avatar img {border-radius: 4px;}
-		.title {padding: 0 10px 5px 10px;font-size: 20px;color: #111;line-height: 28px;margin-top: 0px;}
+		.title {padding: 0 10px 5px 10px;font-size: 20px;color: #111;line-height: 28px;margin-top: 0px;word-wrap: break-word;}
 		.info {font-size: 12px;color: #999;padding: 2px 0 5px 0px;margin: 0 10px;}
+		.payinfo {padding: 20px;}
+		.payinfo .ptip .plogo {display: inline-block;width: 80px;float: left;margin-right: 20px;}
+		.payinfo .ptip {font-size: 30px;font-weight: 100;display: block;line-height: 80px;color: #588d07;width: 250px;margin: 20px auto;}
+		.payinfo .paydetial {text-align: center;padding: 20px 0 0 0;}
 		.content {padding: 8px 0;margin: 0 10px;line-height: 30px;color: #222;border-top: 1px solid #efefef;}
 		.content a {color: #787878;font-weight: bold;}
-		.content img {max-width: 100%;}
 		.appends {margin: 0 10px;}
 		.appends li {margin-bottom: 5px;background: #fff;border-radius: 1px;border-top: 1px solid #efefef;}
 		/*.appends li:last-child {border-bottom: none;}*/
 		.appends t {height: 16px;line-height: 16px;font-size: 12px;color: #ccc;display: block;text-align: right;padding-right: 2px;margin-top:-3px;}
-		.appends p {line-height: 18px;font-size: 12px;color: #454545;padding: 2px;}
+		.appends a {font-weight: bold;}
+		.appends p {line-height: 18px;color: #454545;padding: 2px 0;}
 		.operate-area {text-align: right;padding: 6px 0px;margin: 0 10px;border-top: 1px solid #efefef;}
 		.operate-area span {font-size: 10px;color: #ccc;}
 		.operate-area a {display: inline-block;height: 16px;line-height: 16px;padding: 2px 5px;color: #787878;border: 1px solid #e0e0e0;background: #efefef;border-radius: 2px;margin-left: 8px;font-size: 12px;}
@@ -38,160 +43,58 @@
 		.reply .re_btn {border: 1px solid #cbcbcb;border-radius: 2px;background: #fff;padding: 3px 12px;box-shadow: 0 0 2px #efefef inset;float: right;margin: 8px -6px 6px 0;} 
 		.reply .re_btn:focus {border-color: #bbb;box-shadow: 0 0 6px #cecece inset;}
 		.reply .tit {margin:10px 0 5px -5px;}
-	</style>
-	<style type="text/css">
-	body {
-	    font-family: "Helvetica Neue", Helvetica, "Hiragino Sans GB", Arial, sans-serif;
-	    color: #737373;
-	    background-color: white;
-	}
-	table {
-	    margin: 10px 0 15px 0;
-	    border-collapse: collapse;
-	}
-	td,th { 
-	    border: 1px solid #ddd;
-	    padding: 3px 10px;
-	}
-	th {
-	    padding: 5px 10px;  
-	}
-	a img {
-	    border: none;
-	}
-	h1,
-	h2,
-	h3,
-	h4,
-	h5,
-	h6 {
-	    color: #404040;
-	    line-height: 36px;
-	}
-	h1 {
-	    margin-bottom: 18px;
-	    font-size: 30px;
-	}
-	h2 {
-	    font-size: 24px;
-	}
-	h3 {
-	    font-size: 18px;
-	}
-	h4 {
-	    font-size: 16px;
-	}
-	h5 {
-	    font-size: 14px;
-	}
-	h6 {
-	    font-size: 13px;
-	}
-	hr {
-	    margin: 0 0 19px;
-	    border: 0;
-	    border-bottom: 1px solid #ccc;
-	}
-	blockquote {
-	    padding: 13px 13px 21px 15px;
-	    margin-bottom: 18px;
-	    font-family:georgia,serif;
-	    font-style: italic;
-	    word-wrap:break-word;
-	    display: block;
-	}
-	blockquote:before {
-	    content:"\201C";
-	    font-size:40px;
-	    margin-left:-10px;
-	    font-family:georgia,serif;
-	    color:#eee;
-	}
-	blockquote p {
-	    font-size: 14px;
-	    font-weight: 300;
-	    line-height: 18px;
-	    margin-bottom: 0;
-	    font-style: italic;
-	}
-	code, pre {
-		display: block;
-		word-wrap:break-word;
-		font-family: Monaco, Andale Mono, Courier New, monospace;
-		white-space: normal;  
-		word-break: break-all; 
-	}
-	code {
-	    background-color: rgba(0,0,0,0.04);
-	    color: rgba(0, 0, 0, 0.75);
-	    padding: 1px 3px;
-	    font-size: 12px;
-	    line-height: 22px;
-	    -webkit-border-radius: 3px;
-	    -moz-border-radius: 3px;
-	    border-radius: 3px;
-	}
-	pre {
-	    display: block;
-	    padding: 14px;
-	    margin: 0 0 18px;
-	    line-height: 16px;
-	    font-size: 11px;
-	    border: 1px solid #d9d9d9;
-	    white-space: pre-wrap;
-	    word-wrap: break-word;
-	}
-	pre code {
-	    background-color: #fff;
-	    color:#737373;
-	    font-size: 11px;
-	    padding: 0;
-	}
-	sup {
-	    font-size: 0.83em;
-	    vertical-align: super;
-	    line-height: 0;
-	}
-	* {
-	    -webkit-print-color-adjust: exact;
-	}
-	@media print {
-	    body,code,pre code,h1,h2,h3,h4,h5,h6 {
-	        color: black;
-	    }
-	    table, pre {
-	        page-break-inside: avoid;
-	    }
-	}
+		.markdown-body {line-height:30px;}
+		.markdown-body img {max-width: 100%;}
+		.markdown-body ul li {list-style:disc;}
 	</style>
 {%endblock%}{%block body%}
-	<div class="nav"><a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/forums">分类</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/f/{{forum.id}}">{{forum.name}}</a>&nbsp;&nbsp;›&nbsp;&nbsp;主题详情<a id="avatar" href="/profile/{{author.id}}"><img src="{{author.avatar}}" width="38" /></a></div>
-	<div class="title">{{topic.title}}</div>
-	<div class="info">{{topic.post_date|fashion_date}}前 · <a class="username" href="/profile/{{author.id}}">{{author.name}}</a> · {{topic.view_count}} 次点击{% if topic.user_agent %} · via {{topic.user_agent|post_device}}{% endif%}</div>
-	{% if topic.content %}<div class="content">{{topic.content|markdown|support_at|safe}}</div>{% endif %}
-	<ul class="appends">{%for append in appends%}
-		<li><p>{{append.content|markdown|support_at|safe}}</p><t><a href="/profile/{{append.author.id}}">{{append.author.name}}</a> {{append.date}}前追加</t></li>
-	{%endfor%}</ul>
-	{% if 'ol_user' in session %}<div class="operate-area">{% if collect_count > 0 %}<span>{{collect_count}}人收藏</span>{%endif%}<a href="/collect/t/{{topic.id}}?back=/t/{{topic.id}}">加入收藏</a>{{auth_operate|safe}}</div>{% endif %}
-	<div class="line"></div>
-	<div class="ans-tit"><span style="font-style:italic;font-size: 14px;">{{answer_count}}</span>&nbsp;&nbsp;回复{% if last_answer_info %} <span style="font-weight: bold;font-size: 14px;">|</span> The last by  <a style="color: #888;font-weight: bold;" href="/profile/{{last_answer_info.author_id}}">{{last_answer_info.author_name}}</a> at {{last_answer_info.post_date}} {% endif %}</div>
-	<div id="list" class="answer"></div>
-	<div class="list"><li><a id="get-more" style="text-align: right;" href="javascript:;">回复加载中...</a></li></div>
-	{% if session.ol_user %}
-	<div class="line"></div>
-	<div class="reply">
-		<div class="tit"><img style="float: left;border-radius: 8px;margin-top: 0px;" src="{{session.ol_user.avatar}}" width="16" />&nbsp;&nbsp;{{session.ol_user.name}}</div>
-		<form method="post" action="/reply/{{topic.id}}">
-			<textarea id="answer_box" rows="3" name="content" required="required"></textarea>
-			<p style="margin: 10px 0 0 -5px;width: 72px;display: inline-block;"><a href="/upload">上传图片</a></p>
-			<input onclick="clearAnswerBox();" class="re_btn" type="button" name="" value="重写" />
-			<input onclick="notifyL();" class="re_btn" type="button" name="" value="通知楼主" />
-			<input class="re_btn" type="submit" name="" value="立即回复" />
-		</form>
+	<div class="nav">
+		<a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;
+		<a href="/forums">分类</a>&nbsp;&nbsp;›&nbsp;&nbsp;
+		<a href="/f/{{topic.forum_id}}">{{topic.forum_name}}</a>&nbsp;&nbsp;›&nbsp;&nbsp;主题详情
+		<a id="avatar" href="/profile/{{topic.author_id}}">
+			<img src="{{topic.author_avatar}}" width="38" />
+		</a>
 	</div>
-	{% endif %}
+	{%if topic.price == 0 or paymentIsOK or (session.ol_user and session.ol_user.id == topic.author_id)%}
+		<div class="title">{%if topic.price > 0%}<img style="float: left;margin:3px 3px 0 0" src="https://witalk.cc/r/witalk/points.icon.png" width="22" height="22" />{%endif%}{{topic.title}}</div>
+		<div class="info">{{topic.post_date|fashion_date}}前 · <a class="username" href="/profile/{{topic.author_id}}">{{topic.author_name}}</a> · {{topic.view_count}} 次点击{% if topic.user_agent %} · via {{topic.user_agent|post_device}}{% endif%}</div>
+		{% if topic.content %}<div class="markdown-body content">{{topic.content|markdown|support_at|safe}}</div>{% endif %}
+		<ul class="appends">{%for append in appends%}
+			<li><p class="markdown-body">{{append.content|markdown|support_at|safe}}</p><t><a href="/profile/{{append.author.id}}">{{append.author.name}}</a> {{append.date}}前追加</t></li>
+		{%endfor%}</ul>
+		{% if 'ol_user' in session %}<div class="operate-area">{% if collect_count > 0 %}<span>{{collect_count}}人收藏</span>{%endif%}<a href="/collect/t/{{topic.id}}?back=/t/{{topic.id}}">加入收藏</a>{{auth_operate|safe}}</div>{% endif %}
+		<div class="line"></div>
+		<div class="ans-tit"><span style="font-style:italic;font-size: 14px;">{{answer_count}}</span>&nbsp;&nbsp;回复{% if last_answer_info %} <span style="font-weight: bold;font-size: 14px;">|</span> The last by  <a style="color: #888;font-weight: bold;" href="/profile/{{last_answer_info.author_id}}">{{last_answer_info.author_name}}</a> at {{last_answer_info.post_date}} {% endif %}</div>
+		<div id="list" class="answer"></div>
+		<div class="list"><li><a id="get-more" style="text-align: right;" href="javascript:;">回复加载中...</a></li></div>
+		{% if session.ol_user %}
+		<div class="line"></div>
+		<div class="reply">
+			<div class="tit"><img style="float: left;border-radius: 8px;margin-top: 0px;" src="{{session.ol_user.avatar}}" width="16" />&nbsp;&nbsp;{{session.ol_user.name}}<a style="float:right;margin-right:-5px;" href="#top">回顶部↑</a></div>
+			<form method="post" action="/reply/{{topic.id}}">
+				<textarea id="answer_box" rows="3" name="content" required="required"></textarea>
+				<p style="margin: 10px 0 0 -5px;width: 72px;display: inline-block;"><a href="/upload">上传图片</a></p>
+				<input type="button" onclick="clearAnswerBox();" class="re_btn" value="重写" />
+				<input type="button" onclick="notifyL();" class="re_btn" / value="通知楼主" />
+				<input class="re_btn" type="submit" name="" value="立即回复" />
+			</form>
+		</div>
+		{% endif %}
+	{%else%}
+		<div class="payinfo">
+			<div class="ptip">
+				<img class="plogo" src="https://witalk.cc/r/witalk/pay.png" width="80" />
+				付费主题！
+			</div>
+			<div class="paydetial">
+				本篇主题需要支付{{topic.price}}{{currency()}}，<a href="/pay/{{topic.id}}">立即支付</a>
+			</div>
+		</div>
+	{%endif%}
 {%endblock%}{%block script%}
 <script type="text/javascript">
+	{%if topic.price == 0 or paymentIsOK or (session.ol_user and session.ol_user.id == topic.author_id)%}
 	function ajax(url, fn){
 		var req = new XMLHttpRequest();
 		req.open('GET', url, true);
@@ -218,7 +121,7 @@
 		answer_box.focus();
 	}
 	function notifyL(){
-		l = ' 楼主 @{{author.name}} ';
+		l = ' 楼主 @{{topic.author_name}} ';
 		if(answer_box.value.endsWith(l)){
 			answer_box.focus();
 		}else{
@@ -278,5 +181,24 @@
 			window.location.href = '/topicdel/{{topic.id}}';
 		}
 	}
+	{%endif%}
+	function lazyLoadImage(){
+		var imgs = document.getElementsByClassName('content')
+		if(imgs.length>0){
+			imgs = imgs[0].getElementsByTagName('img')
+		}
+		if(imgs.length>0){
+			attrs = ['data-original', 'data-src']
+			for (var i = imgs.length - 1; i >= 0; i--) {
+				for(a in attrs){
+					if(imgs[i].hasAttribute(attrs[a])){
+						imgs[i].setAttribute('src', imgs[i].getAttribute(attrs[a]))
+						break
+					}
+				}
+			}
+		}
+	}
+	lazyLoadImage()
 </script>
 {%endblock%}

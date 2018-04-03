@@ -1,0 +1,33 @@
+{% extends 'template.html' %}
+{% block head %}{{super()}}
+	<title>WITALK 检索器</title>
+	<style type="text/css">
+		.search {width:80%;margin:40px auto;height:180px;}
+		.search input[type=text]{border:1px solid #ededed;height:32px;line-height:32px;padding:0 20px;width:100%;color:#ccc;border-radius:3px;font-size:16px;margin-left:-20px;}
+		.search input[type=text]:focus {color:#232323;}
+	</style>
+{% endblock %}
+{% block body %}
+	<div class="nav">
+		<a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;检索器
+	</div>
+	<form class="search" action="/s" method="get">
+		<input type="text" name="wd" placeholder="Search params here ..." />
+		<input style="margin:10px 0 0 0;" class="button" type="submit" value="搜索">
+	</form>
+{%endblock%}
+{%block script%}
+<script type="text/javascript">
+	function ajax(url, fn){
+		var req = new XMLHttpRequest();
+		req.open('GET', url, true);
+		req.onreadystatechange = function(){
+			if (req.readyState == 4 && req.status == 200 ) { // readyState == 4说明请求已完成
+              		fn.call(this, req.responseText);  //从服务器获得数据
+       		};
+		};
+		req.send();
+	}
+	
+</script>
+{%endblock%}
