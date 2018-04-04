@@ -30,16 +30,13 @@
 	<div class="nav">
 		<a href="/">WITALK</a>&nbsp;&nbsp;›&nbsp;&nbsp;<a href="/forums">分类</a>&nbsp;&nbsp;›&nbsp;&nbsp;{{forum.name}}
 		<div class="forum-info">
-			{%if 'ol_user' in session%}
-				{%if collected %}
-				<span>已收藏</span>
-				{%else%}
-				<span><a href="/collect/f/{{forum.id}}?back=/f/{{forum.id}}">加入收藏</a></span>
-				{%endif%}&nbsp;&nbsp;
+			{%if collected('f', forum.id) %}
+			<span><a href="/collect/nonf/{{forum.id}}?back=/f/{{forum.id}}">取消收藏</a></span>
 			{%else%}
-			<span></span>
+			<span><a href="/collect/f/{{forum.id}}?back=/f/{{forum.id}}">加入收藏</a></span>
 			{%endif%}
-			<span>主题</span>&nbsp;<span>{{topic_count}}</span></div>
+			<span></span>
+			&nbsp;&nbsp;<span>主题</span>&nbsp;<span>{{topic_count}}</span></div>
 	</div>
 	{% if session.ol_user%}<a class="post" href="/new/{{forum.id}}">创建新主题</a>{%else%}<a class="post" href="/login?back=/new/{{forum.id}}">登录并创建新主题</a>{% endif%}
 	<div id="list" class="list"></div>

@@ -43,7 +43,7 @@ def create_app():
 	app.register_blueprint(search_bp)
 	app.register_blueprint(pay_bp)
 	# template_global
-	from services import svc_user, svc_message, svc_system
+	from services import svc_user, svc_message, svc_system, svc_collection, svc_topic
 	app.add_template_global(svc_message.msgcount, 'msgcount')
 	app.add_template_global(svc_system.currency, 'currency')
 	app.add_template_global(svc_user.collectforums, 'collectforums')
@@ -52,12 +52,16 @@ def create_app():
 	app.add_template_global(svc_user.points, 'points')
 	app.add_template_global(svc_user.signined, 'signined')
 	app.add_template_global(svc_user.signin, 'signin')
+	app.add_template_global(svc_user.administrator, 'administrator')
+	app.add_template_global(svc_topic.goodtopic, 'goodtopic')
+	app.add_template_global(svc_collection.collected, 'collected')
 	return app
 
 def plugin_run(app):
-	from plugin import recent, onlines
+	from plugin import recent, onlines, good
 	onlines.init(app)()
 	recent.init(app)()
+	good.init(app)()
 
 def transactional(func):
 	def t_wrapper(*args):

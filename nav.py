@@ -21,14 +21,7 @@ def thanks():
 def onlines():
 	return render_template(g.tperfix + 'onlines.html')
 
-@bp.route('/forums')
-def forums():
-	conn = current_app.connect()
-	forum_count = conn.execute('select count(id) from forum').first()[0]
-	topic_count = conn.execute('select count(id) from topic').first()[0]
-	trash_topic_count = conn.execute('select count(id) from topic_trash').first()[0]
-	conn.close()
-	return render_template(g.tperfix + 'forums.html', forum_count = forum_count, topic_count = topic_count, trash_topic_count = trash_topic_count)
+
 
 @bp.route('/img/<path:imgname>')
 def images(imgname):

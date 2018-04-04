@@ -1,7 +1,7 @@
 import json, markdown2
 from flask import Blueprint, current_app, request, render_template, session, redirect, g, flash, jsonify
 from tools import *
-from services import svc_user
+from services import svc_user, svc_topic
 
 bp = Blueprint('wit', __name__)
 
@@ -91,7 +91,7 @@ def reply(id):
 	return render_template('reply.html', message = message, topic = topic, param = param)
 
 @bp.route('/f/<int:id>')
-def list(id):
+def _list(id):
 	conn = current_app.connect()
 	forum = conn.execute('select * from forum where id=%d' % id).first()
 	topic_count = conn.execute('select count(id) from topic where forum_id=%d' % id).first()[0]
@@ -101,7 +101,7 @@ def list(id):
 	if 'ol_user' in session:
 		if conn.execute("select count(id) from collection where collect_cate='f' and collect_id=%d and owner_id=%d" % (id, session['ol_user']['id'])).first()[0] != 0:
 			collected = True
-	return render_template(g.tperfix + 'forum.html', forum = forum, topic_count = topic_count, collected = collected)
+	return render_template(g.tperfix + 'forum.html', forum = forum, topic_count = topic_count)
 
 def create_topic_item(row, conn):
 	user = conn.execute('select id,`name`, avatar from user where id=%d' % row.author_id).first()
@@ -129,52 +129,59 @@ def create_topic_item(row, conn):
 @bp.route('/topics/<int:id>/<int:pid>')
 def topics(id, pid):
 	conn = current_app.connect()
-	if id == 0:
-		count = conn.execute('select count(id) from topic').first()[0]
-	else:
-		count = conn.execute('select count(id) from topic where forum_id=%d' % id).first()[0]
+	if id == 0 : count = conn.execute('select count(id) from topic').first()[0]
+	elif id == 1000 : count = len(current_app.good_topic_ids) # good
+	elif id == 1001 : count = conn.execute('select count(id) from topic where view_count > 200').first()[0] # hot
+	else : count = conn.execute('select count(id) from topic where forum_id=%d' % id).first()[0]
 	page_count = request.args.get('count')
 	if page_count :
 		page_info = page_turning_info(count, pid, int(page_count))
 	else: 
 		page_info = page_turning_info(count, pid)
 
-	if not page_info['have']:
-		return 'None'
-	if id == 0:
-		sql = 'select * from topic limit %s' % page_info['limit']
-	else:
-		sql = 'select * from topic where forum_id=%d limit %s' % (id, page_info['limit'])
+	if not page_info['have'] : return jsonify([])
+	if id == 0 : sql = 'select * from topic limit %s' % page_info['limit']
+	elif id == 1000:
+		sql = 'select * from topic where id=null'
+		l = list(map(int, page_info['limit'].split(', ')))
+		limit_list = current_app.good_topic_ids[l[0]:l[1]]
+		for id in limit_list:
+			sql += ' union select * from topic where id=%d' % id
+	elif id == 1001 : sql = 'select * from topic where view_count > 200 order by view_count desc'
+	else : sql = 'select * from topic where forum_id=%d limit %s' % (id, page_info['limit'])
 	topics = conn.execute(sql).fetchall()
 	topics.reverse()
 	json_topics = []
 	for topic in topics:
 		json_topics.append(create_topic_item(topic, conn))
-	return json.dumps(json_topics, ensure_ascii = False)
+	return jsonify(json_topics)
 
 @bp.route('/rtopics/<cate>')
 def rtopics(cate):
 	sql = 'select * from topic where id=null'
 	if cate == 'all':
 		for id in current_app.all_recent_topic_ids:
-			sql += ' union select * from topic where id=%d' % int(id)
+			sql += ' union select * from topic where id=%d' % id
 	elif cate == 'programming':
 		for id in current_app.programming_recent_topic_ids:
-			sql += ' union select * from topic where id=%d' % int(id)
+			sql += ' union select * from topic where id=%d' % id
 	elif cate == 'art':
 		for id in current_app.art_recent_topic_ids:
-			sql += ' union select * from topic where id=%d' % int(id)
+			sql += ' union select * from topic where id=%d' % id
 	elif cate == 'trade':
 		for id in current_app.trade_recent_topic_ids:
-			sql += ' union select * from topic where id=%d' % int(id)
+			sql += ' union select * from topic where id=%d' % id
+	elif cate == 'paid':
+		for id in current_app.paid_recent_topic_ids:
+			sql += ' union select * from topic where id=%d' % id
 	else:
-		return 'None'
+		return jsonify([])
 	conn = current_app.connect()
 	dumps_topics = []
 	row = conn.execute(sql).fetchall()
 	for t1 in row:
 		dumps_topics.append(create_recent_topic_item(t1, conn))
-	return json.dumps(dumps_topics, ensure_ascii = False)
+	return jsonify(dumps_topics)
 
 @bp.route('/mytopics/<int:uid>/<int:pid>')
 def mytopics(uid, pid):
@@ -196,7 +203,7 @@ def mytopics(uid, pid):
 	topics.reverse()
 	for topic in topics:
 		json_topics.append(create_topic_item(topic, conn))
-	return json.dumps(json_topics, ensure_ascii = False)
+	return jsonify(json_topics)
 
 def create_append_item(row, conn):
 	user = conn.execute('select id, name, avatar from user where id=%d' % row.author_id).first()
@@ -363,3 +370,16 @@ def append(id):
 				flash('error.')
 	conn.close()
 	return render_template(g.tperfix + 'append.html', topic = topic, content = append_content)
+@bp.route('/forums')
+def forums():
+	conn = current_app.connect()
+	forum_count = conn.execute('select count(id) from forum').first()[0]
+	topic_count = conn.execute('select count(id) from topic').first()[0]
+	trash_topic_count = conn.execute('select count(id) from topic_trash').first()[0]
+	conn.close()
+	return render_template(g.tperfix + 'forums.html', forum_count = forum_count, topic_count = topic_count, trash_topic_count = trash_topic_count)
+@bp.route('/good/<op>/<int:id>')
+def good_operate(op, id):
+	if 'ol_user' in session and svc_user.administrator(): 
+		svc_topic.good_operate(op, id)
+	return redirect('/t/%d' % id)

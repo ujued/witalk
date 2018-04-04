@@ -12,3 +12,15 @@ def column(column_name, id):
 		return None
 def add_topic():
     pass
+def goodtopic(id):
+    """
+    return boolean
+    """
+    if id in current_app.good_topic_ids : return True
+    return False
+def good_operate(op, id):
+    if op == 'non':
+        current_app.good_topic_ids.remove(id)
+    elif op == 'to':
+        current_app.good_topic_ids.append(id)
+    else : return

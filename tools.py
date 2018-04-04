@@ -1,5 +1,6 @@
 import datetime, hashlib, re
 from flask import session, current_app, request, flash
+from services import svc_topic
 def filter_sql(list):
 	for x in range(0,len(list)):
 		list[x] = list[x].replace("'", "''").replace('%', '__bfh_')
@@ -8,7 +9,7 @@ def filter_sql(list):
 def page_turning_info(item_count, current_page = 1, page_count = 12):
 	pgs = int(item_count / page_count)
 	opg = item_count % page_count
-	limit = '0,1'
+	limit = '0, 1'
 	if current_page <= 0 or item_count == 0:
 		have = False
 	else:
@@ -178,7 +179,8 @@ def ensure_recent_queue_when_remove(topic_id):
 		current_app.trade_recent_topic_ids.remove(topic_id)
 	if topic_id in current_app.programming_recent_topic_ids:
 		current_app.programming_recent_topic_ids.remove(topic_id)
-
+	if topic_id in current_app.paid_recent_topic_ids:
+		current_app.paid_recent_topic_ids.remove(topic_id)
 def ensure_recent_queue_when_post(topic_id, forumid_str):
 	if len(current_app.all_recent_topic_ids) == 36:
 		current_app.all_recent_topic_ids.pop()
@@ -196,6 +198,10 @@ def ensure_recent_queue_when_post(topic_id, forumid_str):
 		if len(current_app.trade_recent_topic_ids) == 36:
 			current_app.trade_recent_topic_ids.pop()
 		current_app.trade_recent_topic_ids.insert(0, topic_id)
+	if svc_topic.price(topic_id) > 0:
+		if len(current_app.paid_recent_topic_ids) == 36:
+			current_app.paid_recent_topic_ids.pop()
+		current_app.paid_recent_topic_ids.insert(0, topic_id)
 def ensure_recent_queue_when_reply(topic_id, forumid_str):
 	all_ids = current_app.all_recent_topic_ids
 	programming_forumids = current_app.programming_forum_ids.split(',')
@@ -204,6 +210,7 @@ def ensure_recent_queue_when_reply(topic_id, forumid_str):
 	art_ids = current_app.art_recent_topic_ids
 	trade_forumids = current_app.trade_forum_ids.split(',')
 	trade_ids = current_app.trade_recent_topic_ids
+	paid_ids = current_app.paid_recent_topic_ids
 	if topic_id in all_ids:
 		all_ids.remove(topic_id)
 	all_ids.insert(0, topic_id)
@@ -219,6 +226,10 @@ def ensure_recent_queue_when_reply(topic_id, forumid_str):
 		if topic_id in trade_ids:
 			trade_ids.remove(topic_id)
 		trade_ids.insert(0, topic_id)
+	if svc_topic.price(topic_id) > 0:
+		if topic_id in paid_ids:
+			paid_ids.remove(topic_id)
+		paid_ids.insert(0, topic_id)
 
 def transactional(func):
 	def t_wrapper(*args, **kwargs):

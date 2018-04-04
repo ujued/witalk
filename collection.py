@@ -1,6 +1,7 @@
 from flask import Blueprint, current_app, request, render_template, redirect, session, flash, g
 from tools import get_date_fashion, filter_sql
 from witalk import create_topic_item
+from services import svc_collection
 
 bp = Blueprint('collection', __name__)
 
@@ -34,7 +35,6 @@ def collections():
 		f_collections.append(create_f_collection_item(collection, conn))
 	for collection in t_collections_row:
 		t_collections.append(create_t_collection_item(collection, conn))
-	conn.close()
 	f_collections.reverse()
 	t_collections.reverse()
 	return render_template(g.tperfix + 'collections.html', f_collections = f_collections, t_collections = t_collections)
@@ -43,19 +43,12 @@ def collections():
 def collect(cate, id):
 	if 'ol_user' not in session:
 		return redirect('/login?back=/collections')
-	user = session['ol_user']
 	cate, = filter_sql([cate,])
-	conn = current_app.connect()
-	count = conn.execute("select count(id) from collection where collect_cate='%s' and owner_id=%d and collect_id=%d" % (cate, user['id'], id)).first()[0]
-	if count == 0:
-		count = conn.execute("insert into collection(collect_cate, collect_id, owner_id) values('%s', %d, %d)" % (cate, id, user['id'])).rowcount
-		if count == 1:
-			flash('收藏成功！')
-		else:
-			flash('收藏失败！')
-	else:
-		flash('已收藏！')
-	conn.close()
+	
+	if cate == 'nont' : svc_collection.noncollect('t', id)
+	elif cate == 'nonf' : svc_collection.noncollect('f', id)
+	else : svc_collection.collect(cate, id)
+
 	backurl = request.args.get('back')
 	if backurl:
 		return redirect(backurl)

@@ -44,7 +44,6 @@
 		.reply .re_btn:focus {border-color: #bbb;box-shadow: 0 0 6px #cecece inset;}
 		.reply .tit {margin:10px 0 5px -5px;}
 		.markdown-body {line-height:30px;}
-		.markdown-body img {max-width: 100%;}
 		.markdown-body ul li {list-style:disc;}
 	</style>
 {%endblock%}{%block body%}
@@ -63,7 +62,24 @@
 		<ul class="appends">{%for append in appends%}
 			<li><p class="markdown-body">{{append.content|markdown|support_at|safe}}</p><t><a href="/profile/{{append.author.id}}">{{append.author.name}}</a> {{append.date}}前追加</t></li>
 		{%endfor%}</ul>
-		{% if 'ol_user' in session %}<div class="operate-area">{% if collect_count > 0 %}<span>{{collect_count}}人收藏</span>{%endif%}<a href="/collect/t/{{topic.id}}?back=/t/{{topic.id}}">加入收藏</a>{{auth_operate|safe}}</div>{% endif %}
+		<div class="operate-area">
+			{% if collect_count > 0 %}
+			<span>{{collect_count}}人收藏</span>
+			{%endif%}
+			{%if collected('t', topic.id)%}
+			<a href="/collect/nont/{{topic.id}}?back=/t/{{topic.id}}">取消收藏</a>
+			{%else%}
+			<a href="/collect/t/{{topic.id}}?back=/t/{{topic.id}}">加入收藏</a>
+			{%endif%}
+			{{auth_operate|safe}}
+			{%if administrator()%}
+				{%if goodtopic(topic.id)%}
+				<a href="/good/non/{{topic.id}}">非优</a>
+				{%else%}
+				<a href="/good/to/{{topic.id}}">优选</a>
+				{%endif%}
+			{%endif%}
+		</div>
 		<div class="line"></div>
 		<div class="ans-tit"><span style="font-style:italic;font-size: 14px;">{{answer_count}}</span>&nbsp;&nbsp;回复{% if last_answer_info %} <span style="font-weight: bold;font-size: 14px;">|</span> The last by  <a style="color: #888;font-weight: bold;" href="/profile/{{last_answer_info.author_id}}">{{last_answer_info.author_name}}</a> at {{last_answer_info.post_date}} {% endif %}</div>
 		<div id="list" class="answer"></div>

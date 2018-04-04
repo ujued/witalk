@@ -16,6 +16,7 @@ def init(app):
 			programming_row = conn.execute('select id from topic where forum_id in (%s) order by post_date desc limit 36' % programming_forum_ids).fetchall()
 			art_row = conn.execute('select id from topic where forum_id in (%s) order by post_date desc limit 36' % art_forum_ids).fetchall()
 			trade_row = conn.execute('select id from topic where forum_id in(%s) order by post_date desc limit 36' % trade_forum_ids).fetchall()
+			paid_row = conn.execute('select id from topic where price > 0 order by post_date desc limit 36').fetchall()
 			for t1 in all_row:
 				app.all_recent_topic_ids.append(t1.id)
 			for t2 in programming_row:
@@ -24,6 +25,8 @@ def init(app):
 				app.art_recent_topic_ids.append(t3.id)
 			for t4 in trade_row:
 				app.trade_recent_topic_ids.append(t4.id)
+			for t5 in paid_row:
+				app.paid_recent_topic_ids.append(t5.id)
 	else:
 		def glist(f):
 			item = f.readline().strip()[1:-1].split(", ")
@@ -35,6 +38,7 @@ def init(app):
 			app.programming_recent_topic_ids = glist(f)
 			app.art_recent_topic_ids = glist(f)
 			app.trade_recent_topic_ids = glist(f)
+			app.paid_recent_topic_ids = glist(f)
 	def run():
 		Thread(target=save_recent_topics).start()		
 	def save_recent_topics():
@@ -48,4 +52,6 @@ def init(app):
 				f.write(str(app.art_recent_topic_ids))
 				f.write('\n')
 				f.write(str(app.trade_recent_topic_ids))
+				f.write('\n')
+				f.write(str(app.paid_recent_topic_ids))
 	return run

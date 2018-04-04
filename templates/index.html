@@ -78,7 +78,9 @@
 		<a id="hot" href="/hot">热议</a>
 	</div>
 	<a class="forums" href="/forums"><img src="https://witalk.cc/r/witalk/rightarrow.png" height="22" /></a>
+	{%if quickindex not in ['hot', 'good']%}
 	<div class="switch"><button id="default-btn">默认</button><button id="new-btn">最新</button></div>
+	{%endif%}
 	<div id="list" class="list"></div>
 	<div class="more"><a id="get-more" href="javascript:;">数据加载中...</a></div>
 	<div class="tip"><a id="tip" href="#top"></a></div>
@@ -120,9 +122,9 @@
 	var pageid = 1;
 	var req_url = '';
 	var totalItemCount = 0;
+	{%if quickindex not in ['hot', 'good']%}
 	var default_btn = document.getElementById('default-btn')
 	var new_btn = document.getElementById('new-btn')
-
 	default_btn.onclick = function(){
 		list.innerHTML = '';
 		get_more.style = 'block';
@@ -132,12 +134,12 @@
 		new_btn.style.cssText = '';
 		req_url = '/rtopics/{{quickindex}}';
 		ajax(req_url, function(txt){
-			if(txt == 'None' || txt == '[]'){
+			topics = JSON.parse(txt);
+			if(topics.length == 0){
 				get_more.innerHTML = '暂无数据！';
 				get_more.onclick = null;
 				return;
 			}
-			topics = JSON.parse(txt);
 			for(posi in topics){
 				topic = topics[posi];
 				if(topic.last_reply_date == 'None')
@@ -160,16 +162,16 @@
 		default_btn.style.cssText = '';
 		req_url = '/topics/0/' + (pageid++);
 		ajax(req_url, function(txt){
-			if(txt == 'None'){
+			topics = JSON.parse(txt);
+			if(topics.length == 0){
 				get_more.innerHTML = '暂无数据！';
 				get_more.onclick = null;
 				return;
 			}
-			topics = JSON.parse(txt);
 			count = 0;
 			for(posi in topics){
 				topic = topics[posi];
-				list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="22" /></a><div class="topic-info"><a class="forum" href="/f/'+ topic.forum.id +'">'+ topic.forum.name +'</a> · <a class="username" href="/profile/'+ topic.author.id+'">'+ topic.author.name +'</a> · '+ topic.post_date +'前</div><div class="topic"><a href="/t/' + topic.id + '">' + topic.title + '</a><a class="answer_count" href="/t/'+ topic.id +'">'+ topic.answer_count +'</a></div></li>\n';
+				list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="22" /></a><div class="topic-info"><a class="forum" href="/f/'+ topic.forum.id +'">'+ topic.forum.name +'</a> · <a class="username" href="/profile/'+ topic.author.id+'">'+ topic.author.name +'</a> · '+ topic.post_date +'前 · '+ topic.view_count +'次浏览</div><div class="topic"><a href="/t/' + topic.id + '">' + topic.title + '</a><a class="answer_count" href="/t/'+ topic.id +'">'+ topic.answer_count +'</a></div></li>\n';
 				count++;
 			}
 			totalItemCount += count;
@@ -180,24 +182,36 @@
 			else get_more.innerHTML = '还有，继续浏览↓';
 		});
 		get_more.onclick = function(){
-			request_new_topics(pageid++);
+			request_new_topics('/topics/0/' + (pageid++));
 		}
 	}
 	default_btn.click();
-	
-	function request_new_topics(pageid){
+	{%elif quickindex == 'good'%}
+	pageid = 1
+	request_new_topics('/topics/1000/' + (pageid++) + '?count=24');
+	get_more.onclick = function(){
+		request_new_topics('/topics/1000/' + (pageid++) +'?count=24');
+	}
+	{%elif quickindex == 'hot'%}
+	pageid = 1
+	request_new_topics('topics/1001/' + (pageid++) + '?count=24')
+	get_more.onclick = function(){
+		request_new_topics('/topics/1001/' + (pageid++) +'?count=24');
+	}
+	{%endif%}
+	function request_new_topics(req_url){
 		get_more.innerHTML = '加载中...';
-		ajax('/topics/0/' + pageid, function(txt){
-			if(txt == 'None'){
-				get_more.innerHTML = '-the end- '+ totalItemCount +'篇全部加载完毕！';
+		ajax(req_url, function(txt){
+			topics = JSON.parse(txt);
+			if(topics.length == 0){
+				get_more.innerHTML = '暂无数据！';
 				get_more.onclick = null;
 				return;
 			}
-			topics = JSON.parse(txt);
 			count = 0
 			for(posi in topics){
 				topic = topics[posi];
-				list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="22" /></a><div class="topic-info"><a class="forum" href="/f/'+ topic.forum.id +'">'+ topic.forum.name +'</a> · <a class="username" href="/profile/'+ topic.author.id+'">'+ topic.author.name +'</a> · '+ topic.post_date +'前</div><div class="topic"><a href="/t/' + topic.id + '">' + topic.title + '</a><a class="answer_count" href="/t/'+ topic.id +'">'+ topic.answer_count +'</a></div></li>\n';
+				list.innerHTML += '<li><a class="avatar" href="/profile/' + topic.author.id+ '"><img src="'+ topic.author.avatar +'" width="22" /></a><div class="topic-info"><a class="forum" href="/f/'+ topic.forum.id +'">'+ topic.forum.name +'</a> · <a class="username" href="/profile/'+ topic.author.id+'">'+ topic.author.name +'</a> · '+ topic.post_date +'前 · '+ topic.view_count +'次浏览</div><div class="topic"><a href="/t/' + topic.id + '">' + topic.title + '</a><a class="answer_count" href="/t/'+ topic.id +'">'+ topic.answer_count +'</a></div></li>\n';
 				count++;
 			}
 			totalItemCount += count;
